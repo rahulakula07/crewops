@@ -1,0 +1,53 @@
+/* Signup.css */
+
+/* Full-screen black background */
+body {
+  background: black !important;
+}
+
+/* Left-side text styling */
+.left-content {
+  color: white;
+  text-shadow: 1px 1px 5px rgba(255, 255, 255, 0.2);
+}
+
+.left-content h2 {
+  font-weight: bold;
+  color: #0d6efd; /* Bootstrap primary blue */
+}
+
+.left-content h5 {
+  margin-top: 20px;
+  font-weight: 600;
+}
+
+/* Glassmorphism effect for the signup form */
+.signup-container {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 4px 30px rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Form input fields */
+.signup-container .form-control {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+}
+
+.signup-container .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Button styling */
+.signup-container .btn-primary {
+  background: rgba(13, 110, 253, 0.8); /* Bootstrap blue */
+  border: none;
+}
+
+.signup-container .btn-primary:hover {
+  background: rgba(13, 110, 253, 1);
+}
