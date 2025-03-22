@@ -1,0 +1,132 @@
+/* Footer Background and Base Styling */
+.footer-section {
+  background-color: black;
+  color: white;
+  padding: 20px 0px;
+  animation: fadeIn 1s ease-in-out;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* Title & Subtitles */
+.footer-title {
+  font-size: 24px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-subtitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* Input and Button */
+.footer-input {
+  border-radius: 5px 0 0 5px;
+  padding: 10px;
+  transition: 0.3s;
+}
+
+.footer-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0px 0px 8px rgba(0, 123, 255, 0.5);
+}
+
+/* Explore Demo Button (Updated Styling) */
+.btn:hover{
+    background-color: #9b59b6;
+}
+.btn{
+    color: white;
+}
+
+
+/* Navigation & Links */
+.footer-list {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-item {
+  color: gray;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.footer-item:hover {
+  color: #9b59b6;
+  transform: translateX(5px);
+  cursor: pointer;
+}
+
+/* Social Icons */
+.footer-socials {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.footer-icon-social {
+  font-size: 24px;
+  color: gray;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.footer-icon-social:hover {
+  color: #9b59b6;
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+/* Bottom Section */
+.footer-bottom {
+  border-top: 1px solid gray;
+  margin-top: 30px;
+  padding-top: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.footer-links {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.footer-bottom-link {
+  color: gray;
+  transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+.footer-bottom-link:hover {
+  color: #9b59b6;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Responsive Tweaks */
+@media (min-width: 768px) {
+  .footer-bottom {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+  }
+}

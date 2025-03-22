@@ -1,63 +1,111 @@
-// import React, { useState } from 'react'
-// import {Form,Button} from "react-bootstrap"
-// import {useNavigate} from "react-router-dom"
-// import {createUserWithEmailAndPassword} from "firebase/auth"
-// import { author,db} from '../../fbconfig'
-// import {set,ref} from "firebase/database"
+// import React, { useState } from "react";
+// import { createUserWithEmailAndPassword } from "firebase/auth";
+// import { author, db } from "../../../fbconfig";
+// import { set, ref } from "firebase/database";
+// import "bootstrap/dist/css/bootstrap.min.css";
+// import "./Signup.css"; // Custom CSS file
+// import { FaUserPlus } from "react-icons/fa";
 
-// function Signup() {
-//     const navigate=useNavigate()
-// const [Signup,setSignup]=useState({
-//     name:"",
-//     email:"",
-//     password:""
-// })
-//      const handleDetails=(e)=>{
-//         setSignup({...Signup,[e.target.name]:e.target.value})
+// const Signup = () => {
+//   const [signup, setSignup] = useState({
+//     name: "",
+//     email: "",
+//     password: "",
+//     userType: "",
+//   });
+
+//   const handleDetails = (e) => {
+//     setSignup({ ...signup, [e.target.name]: e.target.value });
+//   };
+
+//   const handleSignup = async (e) => {
+//     e.preventDefault();
+//     const { name, email, password, userType } = signup;
+//     try {
+//       const signupUser = await createUserWithEmailAndPassword(
+//         author,
+//         email,
+//         password
+//       );
+//       alert("Signup successfully done");
+//       await set(ref(db, "users/" + signupUser.user.uid), {
+//         name: name,
+//         email: email,
+//         userType: userType,
+//         id: signupUser.user.uid,
+//       });
+//     } catch (err) {
+//       console.error(err);
+//       alert("Signup failed. Please try again.");
 //     }
-//      const signSumbit=async(e)=>{
-//         e.preventDefault()
-//         const {name,email,password}=Signup
-//         try{
-//             const signupUser= await createUserWithEmailAndPassword(author,email,password)
-//             alert("signup successfully done")
-//             await set(ref(db,"users/" + name),{
-//                 name:name,
-//                 email:email,
-//                 id:signupUser.user.uid,
-//             })
-//             navigate("/login")
-//         }catch(err){
-//             console.log(err)
-            
-//         }
-//      }
+//   };
 
-//     //  navigate{"/Login"}
 //   return (
-//     <div>
-//       <Form onSubmit={signSumbit}>
-//         <Form.Group>
-//             <Form.Label>Name</Form.Label >
-//                 <Form.Control name="name" type="name" onChange={handleDetails}></Form.Control>
-
-//         </Form.Group>
-//         <Form.Group>
-//             <Form.Label>Email</Form.Label >
-//                 <Form.Control name="email" type="email"  onChange={handleDetails} ></Form.Control>
-
-//         </Form.Group>
-//         <Form.Group>
-//         <Form.Label>password</Form.Label >
-//             <Form.Control name="password" type="password"  onChange={handleDetails} ></Form.Control>
-//     </Form.Group>
-//     <Button  type='submit'>Signup</Button>
-//       </Form>
+//     <div className="signup-container d-flex align-items-center justify-content-center vh-100">
+//       <div className="signup-box p-4 rounded">
+//         <div className="text-center">
+//           <div className="signup-avatar">
+//             <FaUserPlus className="avatar-icon" />
+//           </div>
+//           <h2 className="text-white">Sign Up</h2>
+//         </div>
+//         <form onSubmit={handleSignup}>
+//           <div className="mb-3">
+//             <label className="form-label text-white">Name</label>
+//             <input
+//               type="text"
+//               name="name"
+//               className="form-control input-field"
+//               onChange={handleDetails}
+//               required
+//             />
+//           </div>
+//           <div className="mb-3">
+//             <label className="form-label text-white">Email</label>
+//             <input
+//               type="email"
+//               name="email"
+//               className="form-control input-field"
+//               onChange={handleDetails}
+//               required
+//             />
+//           </div>
+//           <div className="mb-3">
+//             <label className="form-label text-white">Password</label>
+//             <input
+//               type="password"
+//               name="password"
+//               className="form-control input-field"
+//               onChange={handleDetails}
+//               required
+//             />
+//           </div>
+//           <div className="mb-3">
+//             <label className="form-label text-white">User Type</label>
+//             <select
+//               name="userType"
+//               className="form-select input-field"
+//               onChange={handleDetails}
+//               required
+//             >
+//               <option value="" disabled selected>
+//                 Select User Type
+//               </option>
+//               <option value="manager">Manager</option>
+//               <option value="employer">Employer</option>
+//             </select>
+//           </div>
+//           <button type="submit" className="btn signup-button w-100">
+//             Sign Up
+//           </button>
+//         </form>
+//       </div>
 //     </div>
-//   )
-// }
+//   );
+// };
 
-// export default Signup
+// export default Signup;
+
 
 
 
@@ -73,6 +121,10 @@ import {
   Container,
   Avatar,
   CssBaseline,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 
@@ -81,6 +133,7 @@ const Signup = () => {
     name: "",
     email: "",
     password: "",
+    userType: "",
   });
 
   const handleDetails = (e) => {
@@ -89,7 +142,7 @@ const Signup = () => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    const { name, email, password } = signup;
+    const { name, email, password, userType } = signup;
     try {
       const signupUser = await createUserWithEmailAndPassword(
         author,
@@ -97,11 +150,22 @@ const Signup = () => {
         password
       );
       alert("Signup successfully done");
-      await set(ref(db, "users/" + name), {
-        name: name,
-        email: email,
-        id: signupUser.user.uid,
-      });
+      if (userType==="Manager"){
+        await set(ref(db, `users/${userType}/${name}`), {
+          name: name,
+          email: email,
+          userType: userType,
+          id: signupUser.user.uid,
+        });
+      }else{
+        await set(ref(db, "users/Employer" + name), {
+          name: name,
+          email: email,
+          userType: userType,
+          id: signupUser.user.uid,
+        });
+      }
+      
     } catch (err) {
       console.error(err);
       alert("Signup failed. Please try again.");
@@ -109,79 +173,99 @@ const Signup = () => {
   };
 
   return (
-    <Container
-      component="main"
-      maxWidth="xs"
-      sx={{
-        marginTop: 8,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        backgroundColor: "white",
-        padding: 4,
-        borderRadius: 3,
-        border: "2px solid #ddd",
-        boxShadow: "4px 4px 10px rgba(0, 0, 0, 0.1)",
-      }}
-    >
-      <CssBaseline />
-      <Box
+    <div className="signup-container">
+      <Container
+        className="signup-box"
+        component="main"
+        maxWidth="xs"
         sx={{
-          marginTop: 2,
+          marginTop: 8,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          backgroundColor: "#111",
+          padding: 4,
+          borderRadius: 3, 
+          // border: "2px solid #7B43A1",
         }}
       >
-        <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
-          <PersonAddIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign Up
-        </Typography>
-        <Box component="form" onSubmit={handleSignup} sx={{ mt: 3 }}>
-          <TextField
-            fullWidth
-            label="Name"
-            name="name"
-            type="text"
-            variant="outlined"
-            margin="normal"
-            onChange={handleDetails}
-            required
-          />
-          <TextField
-            fullWidth
-            label="Email"
-            name="email"
-            type="email"
-            variant="outlined"
-            margin="normal"
-            onChange={handleDetails}
-            required
-          />
-          <TextField
-            fullWidth
-            label="Password"
-            name="password"
-            type="password"
-            variant="outlined"
-            margin="normal"
-            onChange={handleDetails}
-            required
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            sx={{ mt: 2, mb: 2 }}
-          >
+        <CssBaseline />
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <Avatar className="signup-avatar">
+            <PersonAddIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5" color="white">
             Sign Up
-          </Button>
+          </Typography>
+          <Box component="form" onSubmit={handleSignup} sx={{ mt: 3 }}>
+            <TextField
+              fullWidth
+              label="Name"
+              name="name"
+              type="text"
+              variant="standard"
+              margin="normal"
+              onChange={handleDetails}
+              required
+              sx={{
+                '& .MuiInput-underline:after': { borderBottomColor: '#7B43A1' },
+                '& input': { color: 'white' }
+              }}
+            />
+            <TextField
+              fullWidth
+              label="Email"
+              name="email"
+              type="email"
+              variant="standard"
+              margin="normal"
+              onChange={handleDetails}
+              required
+              sx={{
+                '& .MuiInput-underline:after': { borderBottomColor: '#7B43A1' },
+                '& input': { color: 'white' }
+              }}
+            />
+            <TextField
+              fullWidth
+              label="Password"
+              name="password"
+              type="password"
+              variant="standard"
+              margin="normal"
+              onChange={handleDetails}
+              required
+              sx={{
+                '& .MuiInput-underline:after': { borderBottomColor: '#7B43A1' },
+                '& input': { color: 'white' }
+              }}
+            />
+            <FormControl fullWidth margin="normal" variant="standard" sx={{ '& .MuiInput-underline:after': { borderBottomColor: '#7B43A1' } }}>
+              <InputLabel sx={{ color: 'white' }}>User Type</InputLabel>
+              <Select
+                name="userType"
+                value={signup.userType}
+                onChange={handleDetails}
+                required
+                sx={{ color: 'white' }}
+              >
+                <MenuItem value="manager">Manager</MenuItem>
+                <MenuItem value="employer">Employer</MenuItem>
+              </Select>
+            </FormControl>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              className="signup-button"
+              sx={{ mt: 2, mb: 2 }}
+            >
+              Sign Up
+            </Button>
+          </Box>
         </Box>
-      </Box>
-    </Container>
+      </Container>
+    </div>
   );
 };
 
