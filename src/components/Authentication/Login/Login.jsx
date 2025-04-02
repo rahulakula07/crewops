@@ -1,54 +1,10 @@
-// import React, { useState } from 'react'
-// import {Form,Button} from "react-bootstrap"
-// import { signInWithEmailAndPassword } from 'firebase/auth'
-// import { author } from '../../fbconfig'
-
-// function Login() {
-//     const [login,setLogin]=useState({
-//         emali:"",
-//         password:""
-//     })
-//    const handleDetails=(e)=>{
-//     setLogin({...login,[e.target.name]:e.target.value})
-//    }
-//     const handleLogin=async(e)=>{
-//         e.preventDefault()
-//         const{email,password}=login
-//         try{
-//             await signInWithEmailAndPassword(author,email,password)
-//             alert("loggedin succesfully")
-//         }catch(err){
-//             console.log(err);
-            
-//         }
-//     }
-//   return (
-//     <div>
-//       <Form onSubmit={handleLogin}>
-//       <Form.Group>
-//             <Form.Label>Email</Form.Label >
-//                 <Form.Control name="email" type="email"  onChange={handleDetails} ></Form.Control>
-
-//         </Form.Group>
-//         <Form.Group>
-//         <Form.Label>password</Form.Label >
-//             <Form.Control name="password" type="password"  onChange={handleDetails} ></Form.Control>
-//     </Form.Group>
-//     <Button  type='submit'>Login</Button>
-//       </Form>
-//     </div>
-//   )
-// }
-
-// export default Login
-
-
 import React, { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import './login.css'
 import { author } from "../../../fbconfig";
-// import { useNavigate } from "react-router-dom";
+import AdminDashboard from "../../Dashboard/mangerDashboard/ManagerDashboard";
+
 import {
   Box,
   TextField,
@@ -78,7 +34,7 @@ const Login = () => {
     try {
       await signInWithEmailAndPassword(author, email, password);
       alert("Logged in successfully");
-      navigate("/AdminDasboard")
+      navigate("/AdminDashboard")
       
     } catch (err) {
       console.error(err);

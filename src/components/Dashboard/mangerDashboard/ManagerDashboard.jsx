@@ -2,24 +2,17 @@ import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Card, ListGroup } from "react-bootstrap";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { FaUsers, FaBuilding, FaCheckCircle, FaDollarSign, FaCog, FaSignOutAlt, FaThLarge, FaUserTie } from "react-icons/fa";
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+// import { initializeApp } from "firebase/app";
+// import { getAuth } from "firebase/auth";
+import { db } from "../../../fbconfig";
 import { getDatabase, ref, get } from "firebase/database";
+import {Link,useNavigate} from "react-router-dom"
+import "../mangerDashboard/pages/managerDashboard.css"
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAxxisbu1VitzD0LsBV2t50Qq9YU9i0Yhg",
-  authDomain: "employermangement.firebaseapp.com",
-  projectId: "employermangement",
-  storageBucket: "employermangement.firebasestorage.app",
-  messagingSenderId: "513827942738",
-  appId: "1:513827942738:web:903907cc5c69686a250a8b",
-  measurementId: "G-C82XX8Z38F"
-};
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
 
 const AdminDashboard = () => {
+  const navigate=useNavigate()
   const [stats, setStats] = useState({
     employees: 0,
     departments: 0,
@@ -56,16 +49,16 @@ const AdminDashboard = () => {
 
   return (
     <div className="d-flex">
-      <div className="bg-light vh-100 p-3" style={{ width: "250px" }}>
-        <h4 className="text-dark mb-4">Ems Dashboard</h4>
-        <ListGroup variant="flush">
-          <ListGroup.Item className="border-0"><FaThLarge className="me-2" /> Dashboard</ListGroup.Item>
-          <ListGroup.Item className="border-0"><FaUserTie className="me-2" /> Employees</ListGroup.Item>
-          <ListGroup.Item className="border-0"><FaBuilding className="me-2" /> Departments</ListGroup.Item>
-          <ListGroup.Item className="border-0"><FaCog className="me-2" /> Settings</ListGroup.Item>
-          <ListGroup.Item className="border-0 text-danger"><FaSignOutAlt className="me-2" /> Logout</ListGroup.Item>
+      {/* <div className=" bg-light vh-100 p-3" style={{ width: "250px" }}>
+        <h4 className="text-dark mb-4">HRbes</h4>
+        <ListGroup variant="flush" className="flush" >
+          <button ><ListGroup.Item className="border-0"><FaThLarge className="me-2" /> Dashboard</ListGroup.Item></button>
+          <button onClick={()=>navigate("/employers")}><ListGroup.Item className="border-0"><FaUserTie className="me-2" /> Employees</ListGroup.Item></button>
+          <button><ListGroup.Item className="border-0"><FaBuilding className="me-2" /> Departments</ListGroup.Item></button>
+          <button><ListGroup.Item className="border-0"><FaCog className="me-2" /> Settings</ListGroup.Item></button>
+          <button><ListGroup.Item className="border-0 text-danger"><FaSignOutAlt className="me-2" /> Logout</ListGroup.Item></button>
         </ListGroup>
-      </div>
+      </div> */}
 
       <Container className="mt-4">
         <Row>
