@@ -1,120 +1,214 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../../../fbconfig";
-import { ref, get } from "firebase/database";
-import { Button, colors, TextField } from "@mui/material";
+import { ref, get, update } from "firebase/database";
+import { Button, TextField } from "@mui/material";
 
 const Departments = () => {
-    const [selectedDepartment, setSelectedDepartment] = useState("");
-    const [users, setUsers] = useState([]);
-    const [filteredUsers, setFilteredUsers] = useState([]);
-    const [searchQuery, setSearchQuery] = useState("");
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedUser, setSelectedUser] = useState(null); 
+  const [newTask, setNewTask] = useState("");
 
-    const departments = ["HR", "Engineering", "Marketing", "Sales", "Finance"];
+  const departments = ["HR", "Engineering", "Marketing", "Sales", "Finance"];
 
+  const fetchUsersByDepartment = async (department) => {
+    setSelectedDepartment(department);
+    setSearchQuery("");
+    setSelectedUser(null); 
 
-    const fetchUsersByDepartment = async (department) => {
-        setSelectedDepartment(department);
-        setSearchQuery("");
+    try {
+      const usersRef = ref(db, "users/employers");
+      const snapshot = await get(usersRef);
 
-        try {
-            const usersRef = ref(db, "users/employers");
-            const snapshot = await get(usersRef);
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        console.log(data)
+        const departmentUsers = Object.keys(data)
+          .map((key) => ({ nameKey: key, ...data[key] })) 
+          .filter((user) => user.department === department);
 
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                const departmentUsers = Object.keys(data)
-                    .map((key) => ({ id: key, ...data[key] }))
-                    .filter((user) => user.department === department);
+        setUsers(departmentUsers);
+        setFilteredUsers(departmentUsers);
+      } else {
+        setUsers([]);
+        setFilteredUsers([]);
+      }
+    } catch (error) {
+      console.error("Error fetching department users:", error);
+    }
+  };
 
-                setUsers(departmentUsers);
-                setFilteredUsers(departmentUsers);
-            } else {
-                setUsers([]);
-                setFilteredUsers([]);
-            }
-        } catch (error) {
-            console.error("Error fetching department users:", error);
-        }
-    };
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
 
-
-    const handleSearch = (e) => {
-        const query = e.target.value.toLowerCase();
-        setSearchQuery(query);
-
-        const filtered = users.filter((user) =>
-            user.name.toLowerCase().includes(query)
-        );
-        setFilteredUsers(filtered);
-    };
-
-    return (
-        <div className="d-flex flex-column align-items-center p-4">
-            <h4 className="text-white mb-3">Departments</h4>
-
-            {/* Department Buttons */}
-            <div className="mb-3">
-                {departments.map((dept) => (
-                    <Button
-                        key={dept}
-                        variant={selectedDepartment === dept ? "contained" : "outlined"}
-                        color=""
-                        onClick={() => fetchUsersByDepartment(dept)}
-                        sx={{
-                            margin: "5px",
-                            color: "black",
-                            backgroundColor: "white",
-                            "&:hover": { backgroundColor: "#f0f0f0" },
-                            border: "white"
-
-                        }}
-                    >
-                        {dept}
-                    </Button>
-                ))}
-            </div>
-
-            {/* Search Bar */}
-            {selectedDepartment && (
-                <TextField
-                    label="Search User"
-                    variant="standard" 
-                    fullWidth
-                    value={searchQuery}
-                    onChange={handleSearch}
-                    sx={{
-                        backgroundColor: "white",
-                        color: "green",
-                        borderRadius: "5px",
-                        mb: 2,
-                        "& .MuiInputBase-input": { color: "black" }, 
-                        "& .MuiInput-underline:before, & .MuiInput-underline:after": { borderBottom: "none" } 
-                    }}
-                />
-            )}
-
-
-            {/* Display Users */}
-            <div className="w-100">
-                {selectedDepartment && (
-                    <>
-                        <h5 className="text-light">{selectedDepartment} Department</h5>
-                        {filteredUsers.length > 0 ? (
-                            <ul className="list-group">
-                                {filteredUsers.map((user) => (
-                                    <li key={user.id} className="list-group-item p-2 border rounded shadow-sm my-2">
-                                        <strong>{user.name}</strong> - {user.email}
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p className="text-white" >No users found in this department.</p>
-                        )}
-                    </>
-                )}
-            </div>
-        </div>
+    const filtered = users.filter((user) =>
+      user.name.toLowerCase().includes(query)
     );
+    setFilteredUsers(filtered);
+  };
+
+  const handleUserClick = (user) => {
+    setSelectedUser(user); 
+  };
+
+  const handleAddTask = async () => {
+    if (!newTask.trim() || !selectedUser) return;
+    const updatedTasks = selectedUser.tasks ? [...selectedUser.tasks, newTask] : [newTask]; 
+
+    try {
+      await update(ref(db, `users/employers/${selectedUser.nameKey}`), {
+        ...selectedUser,
+        tasks: updatedTasks, 
+      });
+
+      setSelectedUser({ ...selectedUser, tasks: updatedTasks });
+      setNewTask("");
+    } catch (error) {
+      console.error("Error adding task:", error);
+    }
+  };
+
+  const handleDeleteTask = async (index) => {
+    if (!selectedUser) return;
+    const updatedTasks = selectedUser.tasks.filter((_, i) => i !== index);
+
+    try {
+      await update(ref(db, `users/employers/${selectedUser.nameKey}`), {
+        ...selectedUser,
+        tasks: updatedTasks,
+      });
+
+      setSelectedUser({ ...selectedUser, tasks: updatedTasks });
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
+  };
+
+  return (
+    <div className="d-flex flex-column align-items-center p-4">
+      <h4 className="text-white mb-3">Departments</h4>
+
+      <div className="mb-3">
+        {departments.map((dept) => (
+          <Button
+            key={dept}
+            variant={selectedDepartment === dept ? "contained" : "outlined"}
+            onClick={() => fetchUsersByDepartment(dept)}
+            sx={{
+              margin: "5px",
+              color: "black",
+              backgroundColor: "white",
+              "&:hover": { backgroundColor: "#f0f0f0" },
+              border: "white",
+            }}
+          >
+            {dept}
+          </Button>
+        ))}
+      </div>
+
+      {selectedDepartment && (
+        <TextField
+          label="Search User"
+          variant="standard"
+          fullWidth
+          value={searchQuery}
+          onChange={handleSearch}
+          sx={{
+            backgroundColor: "white",
+            color: "green",
+            borderRadius: "5px",
+            mb: 2,
+            "& .MuiInputBase-input": { color: "black" },
+            "& .MuiInput-underline:before, & .MuiInput-underline:after": {
+              borderBottom: "none",
+            },
+          }}
+        />
+      )}
+
+      <div className="w-100">
+        {selectedDepartment && (
+          <>
+            <h5 className="text-light">{selectedDepartment} Department</h5>
+            {filteredUsers.length > 0 ? (
+              <ul className="list-group">
+                {filteredUsers.map((user) => (
+                  <li
+                    key={user.id}
+                    className="list-group-item p-2 border rounded shadow-sm my-2"
+                    onClick={() => handleUserClick(user)} 
+                    style={{ cursor: "pointer" }}
+                  >
+                    <strong>{user.name}</strong> - {user.email}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-white">No users found in this department.</p>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* ✅ Selected User Task Management */}
+      {selectedUser && (
+        <div className="mt-4 w-100">
+          <h5 className="text-light">Tasks for {selectedUser.name}</h5>
+
+          <TextField
+            label="New Task"
+            variant="standard"
+            fullWidth
+            value={newTask}
+            onChange={(e) => setNewTask(e.target.value)}
+            sx={{
+              backgroundColor: "white",
+              borderRadius: "5px",
+              mt: 2,
+              "& .MuiInputBase-input": { color: "black" },
+              "& .MuiInput-underline:before, & .MuiInput-underline:after": {
+                borderBottom: "none",
+              },
+            }}
+          />
+
+          <Button
+            onClick={handleAddTask}
+            variant="contained"
+            sx={{ mt: 2 }}
+          >
+            Add Task
+          </Button>
+
+          {selectedUser.tasks && selectedUser.tasks.length > 0 && (
+            <ul className="list-group mt-3">
+              {selectedUser.tasks.map((task, index) => (
+                <li
+                  key={index}
+                  className="list-group-item d-flex justify-content-between align-items-center"
+                >
+                  {task}
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    size="small"
+                    onClick={() => handleDeleteTask(index)}
+                  >
+                    Delete
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default Departments;
+

@@ -1,77 +1,85 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Card, ListGroup } from "react-bootstrap";
+import { Container, Row, Col, Card } from "react-bootstrap";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { FaUsers, FaBuilding, FaCheckCircle, FaDollarSign, FaCog, FaSignOutAlt, FaThLarge, FaUserTie } from "react-icons/fa";
-// import { initializeApp } from "firebase/app";
-// import { getAuth } from "firebase/auth";
+import { FaUsers, FaBuilding, FaDollarSign } from "react-icons/fa";
 import { db } from "../../../fbconfig";
-import { getDatabase, ref, get } from "firebase/database";
-import {Link,useNavigate} from "react-router-dom"
-import "../mangerDashboard/pages/managerDashboard.css"
-
-
+import { ref, onValue } from "firebase/database";
+import { useNavigate } from "react-router-dom";
+// import "./managerDashboard.css";
 
 const AdminDashboard = () => {
-  const navigate=useNavigate()
-  const [stats, setStats] = useState({
-    employees: 0,
-    departments: 0,
-    attendance: 0,
-    payroll: 0,
-  });
+  const [userCount, setUserCount] = useState(0);
   const [data, setData] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const employeesSnap = await get(ref(db, "employees"));
-        const departmentsSnap = await get(ref(db, "departments"));
-        const attendanceSnap = await get(ref(db, "attendance"));
-        let totalPayroll = 0;
-        if (employeesSnap.exists()) {
-          Object.values(employeesSnap.val()).forEach((employee) => {
-            totalPayroll += employee.salary || 0;
-          });
-        }
-        setStats({
-          employees: employeesSnap.exists() ? Object.keys(employeesSnap.val()).length : 0,
-          departments: departmentsSnap.exists() ? Object.keys(departmentsSnap.val()).length : 0,
-          attendance: attendanceSnap.exists() ? Object.keys(attendanceSnap.val()).length : 0,
-          payroll: totalPayroll,
-        });
-      } catch (error) {
-        console.error("Error fetching stats:", error);
-      }
-    };
+    const usersRef = ref(db, "users");
+    console.log(usersRef)
 
-    fetchStats();
+    const unsubscribe = onValue(usersRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const users = snapshot.val();
+        const count = Object.keys(users).length;
+        setUserCount(count);
+      } else {
+        setUserCount(0);
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
+
+  const chartData = [
+    { name: "HR", employees: 4 },
+    { name: "Tech", employees: 5 },
+    { name: "Sales", employees: 3 },
+    { name: "Marketing", employees: 2 },
+    { name: "Finance", employees: 4 },
+  ];
+
+  const handleNavigate = (path) => {
+    navigate(path);
+  };
+
+  const stats = [
+    {
+      title: "Total Employees",
+      value: userCount,
+      color: "#6f42c1",
+      icon: <FaUsers />,
+      path: "/admins/employer"
+    },
+    {
+      title: "Departments",
+      value: 5,
+      color: "#dc3545",
+      icon: <FaBuilding />,
+      path: "/admins/Departments"
+    },
+    {
+      title: "Total Payroll",
+      value: "$25,000",
+      color: "#ffc107",
+      icon: <FaDollarSign />,
+      path: null
+    }
+  ];
 
   return (
     <div className="d-flex">
-      {/* <div className=" bg-light vh-100 p-3" style={{ width: "250px" }}>
-        <h4 className="text-dark mb-4">HRbes</h4>
-        <ListGroup variant="flush" className="flush" >
-          <button ><ListGroup.Item className="border-0"><FaThLarge className="me-2" /> Dashboard</ListGroup.Item></button>
-          <button onClick={()=>navigate("/employers")}><ListGroup.Item className="border-0"><FaUserTie className="me-2" /> Employees</ListGroup.Item></button>
-          <button><ListGroup.Item className="border-0"><FaBuilding className="me-2" /> Departments</ListGroup.Item></button>
-          <button><ListGroup.Item className="border-0"><FaCog className="me-2" /> Settings</ListGroup.Item></button>
-          <button><ListGroup.Item className="border-0 text-danger"><FaSignOutAlt className="me-2" /> Logout</ListGroup.Item></button>
-        </ListGroup>
-      </div> */}
-
       <Container className="mt-4">
         <Row>
-          {[{ title: "Total Employees", value: stats.employees, color: "#6f42c1", icon: <FaUsers /> },
-            { title: "Departments", value: stats.departments, color: "#dc3545", icon: <FaBuilding /> },
-            { title: "Attendance Today", value: stats.attendance, color: "#28a745", icon: <FaCheckCircle /> },
-            { title: "Total Payroll", value: `$${stats.payroll.toLocaleString()}`, color: "#ffc107", icon: <FaDollarSign /> },
-          ].map((stat, index) => (
-            <Col md={3} key={index} className="mb-3">
-              <Card className="text-white text-center" style={{ backgroundColor: stat.color }}>
+          {stats.map((stat, index) => (
+            <Col md={4} key={index} className="mb-3">
+              <Card
+                className="text-white text-center"
+                style={{ backgroundColor: stat.color, cursor: stat.path ? "pointer" : "default" }}
+                onClick={() => stat.path && handleNavigate(stat.path)}
+              >
                 <Card.Body>
                   <Card.Title className="d-flex align-items-center justify-content-center">
-                    {stat.icon} <span className="ms-2">{stat.title}</span>
+                    {stat.icon}
+                    <span className="ms-2">{stat.title}</span>
                   </Card.Title>
                   <Card.Text style={{ fontSize: "1.5rem" }}>{stat.value}</Card.Text>
                 </Card.Body>
@@ -83,9 +91,9 @@ const AdminDashboard = () => {
         <Row>
           <Col md={12}>
             <Card className="p-3">
-              <Card.Title>Employee Growth</Card.Title>
+              <Card.Title>Employees per Department</Card.Title>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={data}>
+                <BarChart data={chartData}>
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
