@@ -63,7 +63,6 @@ import React, { Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 import Login from './components/Authentication/Login/Login';
 import Signup from './components/Authentication/SignUp/Signup';
 import LandingPage from './components/Launchpage/Launchpage';

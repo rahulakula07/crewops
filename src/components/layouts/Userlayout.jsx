@@ -6,41 +6,53 @@ import Footer from "../Footer/Footer";
 import UserSidebar from "../Dashboard/employerDasboard/UserSidebar";
 import { useTheme, useMediaQuery, Box, Skeleton } from "@mui/material";
 
+// Layout constants
+const drawerWidth = 240;
+const navbarHeight = 64;
+const footerHeight = 56;
+
 const UserLayout = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       {/* Navbar */}
-      <Navbar />
+      <Box sx={{ height: `${navbarHeight}px`, flexShrink: 0 }}>
+        <Navbar />
+      </Box>
 
-      {/* Content Area */}
-      <Box sx={{ display: "flex", flexGrow: 1 }}>
+      {/* Sidebar + Main Content */}
+      <Box sx={{ display: "flex", flexGrow: 1, overflow: "hidden" }}>
         {/* Sidebar */}
         {!isMobile && (
           <Box
             component="aside"
             sx={{
-              width: { md: 240, sm: 200 },
+              width: drawerWidth,
               flexShrink: 0,
               display: { xs: "none", md: "block" },
               borderRight: "1px solid #e0e0e0",
               bgcolor: "background.paper",
+              height: `calc(100vh - ${navbarHeight + footerHeight}px)`,
+              overflowY: "auto",
+              overflowX: "hidden",
+              boxSizing: "border-box",
             }}
           >
             <UserSidebar />
           </Box>
         )}
 
-        {/* Main Content with Skeleton Fallback */}
+        {/* Main Content */}
         <Box
-          component="section"
+          component="main"
           sx={{
             flexGrow: 1,
             p: 2,
             overflowY: "auto",
-            width: { xs: "100%", md: `calc(100% - 240px)` },
+            height: `calc(100vh - ${navbarHeight + footerHeight}px)`,
+            bgcolor: "background.default",
           }}
         >
           <Suspense
@@ -58,7 +70,9 @@ const UserLayout = () => {
       </Box>
 
       {/* Footer */}
-      <Footer />
+      <Box sx={{ height: `${footerHeight}px`, flexShrink: 0 }}>
+        <Footer />
+      </Box>
     </Box>
   );
 };

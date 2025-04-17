@@ -3,6 +3,25 @@ import { Link, useNavigate } from 'react-router-dom';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import { getDatabase, ref, onValue } from 'firebase/database';
 import { FaUserCircle } from 'react-icons/fa';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  IconButton,
+  Menu,
+  MenuItem,
+  Avatar,
+  Box,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+  useMediaQuery,
+  useTheme
+} from '@mui/material';
+import { Menu as MenuIcon } from '@mui/icons-material';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -12,6 +31,7 @@ function Navbar() {
   const [user, setUser] = useState(null);
   const [userName, setUserName] = useState('');
   const [showLogout, setShowLogout] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -48,72 +68,98 @@ function Navbar() {
     setShowLogout(!showLogout);
   };
 
+  const theme = useTheme();
+  // Mobile and tablet sizes now start from 768px (sm and below)
+  const isMobileOrTablet = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const toggleDrawer = () => {
+    setDrawerOpen(!drawerOpen);
+  };
+
   return (
     <div className="landing-page">
-      <nav className="navbar navbar-expand-lg navbar-dark">
-        <div className="container">
-          <a className="navbar-brand" href="#">HRbes</a>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav"
+      <AppBar position="static" sx={{ backgroundColor: 'black' }}>
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Typography
+            variant="h6"
+            component={Link}
+            to="/"
+            sx={{
+              color: '#fff',
+              textDecoration: 'none',
+              fontSize: { xs: '1.2rem', sm: '1.5rem', md: '1.7rem' },
+            }}
           >
-            <span className="navbar-toggler-icon"></span>
-          </button>
+            HRbes
+          </Typography>
 
-          <div className="collapse navbar-collapse" id="navbarNav">
-            <ul className="navbar-nav ms-auto">
-              <li className="nav-item"><a className="nav-link" href="#">Demo</a></li>
-              <li className="nav-item"><a className="nav-link" href="#">Features</a></li>
-              <li className="nav-item"><a className="nav-link" href="#">Free Figma File</a></li>
-              <li className="nav-item"><a className="nav-link" href="#">Usability</a></li>
-
-              {/* Mobile View Buttons */}
+          {/* Hamburger menu for mobile and tablet */}
+          {isMobileOrTablet ? (
+            <IconButton
+              color="inherit"
+              onClick={toggleDrawer}
+              sx={{ display: { xs: 'block', sm: 'none' } }}
+            >
+              <MenuIcon />
+            </IconButton>
+          ) : (
+            <Box display="flex" alignItems="center" sx={{ display: { xs: 'none', sm: 'flex' } }}>
               {!user ? (
                 <>
-                  <li className="nav-item d-lg-none mt-2">
-                    <Link to="/Signup" className="buy-now">Sign up</Link>
-                  </li>
-                  <li className="nav-item d-lg-none">
-                    <Link to="/Login" className="buy-now">Login</Link>
-                  </li>
+                  {/* <Button color="inherit" component={Link} to="/Signup">
+                    Sign Up
+                  </Button> */}
+                  <Button color="inherit" component={Link} to="/Login">
+                    Login
+                  </Button>
                 </>
               ) : (
-                <li className="nav-item d-lg-none mt-2 text-white" onClick={handleIconClick}>
-                  <FaUserCircle className="me-2" />
-                  {userName}
+                <Box sx={{ display: 'flex', alignItems: 'center' }} onClick={handleIconClick}>
+                  <Avatar sx={{ marginRight: 1 }}>
+                    <FaUserCircle />
+                  </Avatar>
+                  <Typography variant="body1" sx={{ color: 'white' }}>
+                    {userName}
+                  </Typography>
                   {showLogout && (
-                    <div>
-                      <button className="buy-now mt-2" onClick={handleLogout}>Logout</button>
-                    </div>
+                    <Button color="inherit" sx={{ marginLeft: 2 }} onClick={handleLogout}>
+                      Logout
+                    </Button>
                   )}
-                </li>
+                </Box>
               )}
-            </ul>
+            </Box>
+          )}
+        </Toolbar>
+      </AppBar>
 
-            {/* Desktop View Buttons */}
-            {!user ? (
-              <div className="d-none d-lg-flex ms-3">
-                <Link to="/Signup" className="buy-now me-2">Sign up</Link>
-                <Link to="/Login" className="buy-now">Login</Link>
-              </div>
-            ) : (
-              <div className="d-none d-lg-flex align-items-center text-white ms-3" onClick={handleIconClick} style={{ cursor: 'pointer' }}>
-                <FaUserCircle className="me-2" size={24} />
-                {userName}
-                {showLogout && (
-                  <button className="buy-now ms-3" onClick={handleLogout}>Logout</button>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      </nav>
+      {/* Mobile and Tablet Drawer */}
+      <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer}>
+        <List>
+          {!user ? (
+            <>
+              <ListItem button component={Link} to="/Signup">
+                <ListItemText primary="Sign Up" />
+              </ListItem>
+              <ListItem button component={Link} to="/Login">
+                <ListItemText primary="Login" />
+              </ListItem>
+            </>
+          ) : (
+            <>
+              <ListItem button onClick={handleIconClick}>
+                <ListItemText primary={userName} />
+              </ListItem>
+              <Divider />
+              <ListItem button onClick={handleLogout}>
+                <ListItemText primary="Logout" />
+              </ListItem>
+            </>
+          )}
+        </List>
+      </Drawer>
     </div>
   );
 }
 
 export default Navbar;
-
-

@@ -1,70 +1,88 @@
-  import React, { Suspense } from "react";
-  import { Outlet } from "react-router-dom";
-  import Navbar from "../../Navbar/Navbar";
-  import Sidebar from "../Dashboard/mangerDashboard/pages/sidebar";
-  import Footer from "../Footer/Footer";
-  import { Box, CssBaseline, Skeleton, useMediaQuery } from "@mui/material";
-  import { useTheme } from "@mui/material/styles";
+import React, { Suspense } from "react";
+import { Outlet } from "react-router-dom";
+import Navbar from "../../Navbar/Navbar";
+import Sidebar from "../Dashboard/mangerDashboard/pages/sidebar";
+import Footer from "../Footer/Footer";
+import { Box, CssBaseline, Skeleton, useMediaQuery } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
-  const drawerWidth = 240;
+// Layout constants
+const drawerWidth = 240;
+const navbarHeight = 64;
+const footerHeight = 56;
 
-  const AdminLayout = () => {
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+const AdminLayout = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-    return (
-      <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-        <CssBaseline />
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+      <CssBaseline />
+
+      {/* Navbar */}
+      <Box sx={{ height: `${navbarHeight}px`, flexShrink: 0 }}>
         <Navbar />
-        <Box sx={{ display: "flex", flexGrow: 1 }}>
-          {/* Sidebar - hidden on mobile */}
-          {!isMobile && (
-            <Box
-              component="aside"
-              sx={{
-                width: { md: drawerWidth, sm: 200 },
-                flexShrink: 0,
-                display: { xs: "none", md: "block" },
-                borderRight: "1px solid #e0e0e0",
-                bgcolor: "background.paper",
-              }}
-            >
-              <Sidebar />
-            </Box>
-          )}
+      </Box>
 
-          {/* Main Content */}
+      {/* Main Layout Section: Sidebar + Content */}
+      <Box sx={{ display: "flex", flexGrow: 1, overflow: "hidden" }}>
+        {/* Sidebar - shown only on medium+ screens */}
+        {!isMobile && (
           <Box
-            component="section"
+            component="aside"
             sx={{
-              flexGrow: 1,
-              p: 2,
+              width: drawerWidth,
+              flexShrink: 0,
+              display: { xs: "none", md: "block" },
+              borderRight: "1px solid #e0e0e0",
+              bgcolor: "background.paper",
+              height: `calc(100vh - ${navbarHeight + footerHeight}px)`,
               overflowY: "auto",
-              width: { xs: "100%", md: `calc(100% - ${drawerWidth}px)` },
+              overflowX: "hidden", // Prevent horizontal scroll
+              boxSizing: "border-box",
             }}
           >
-            {/* Suspense wrapper with a Skeleton fallback */}
-            <Suspense
-              fallback={
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  <Skeleton variant="rectangular" width="100%" height={200} />
-                  <Skeleton variant="text" width="60%" />
-                  <Skeleton variant="text" width="80%" />
-                </Box>
-              }
-            >
-              <Outlet />
-            </Suspense>
+            <Sidebar />
           </Box>
+        )}
+
+        {/* Main Content */}
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            p: 2,
+            overflowY: "auto",
+            height: `calc(100vh - ${navbarHeight + footerHeight}px)`,
+            bgcolor: "background.default",
+          }}
+        >
+          <Suspense
+            fallback={
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Skeleton variant="rectangular" width="100%" height={200} />
+                <Skeleton variant="text" width="60%" />
+                <Skeleton variant="text" width="80%" />
+              </Box>
+            }
+          >
+            <Outlet />
+          </Suspense>
         </Box>
+      </Box>
+
+      {/* Footer */}
+      <Box sx={{ height: `${footerHeight}px`, flexShrink: 0 }}>
         <Footer />
       </Box>
-    );
-  };
+    </Box>
+  );
+};
 
-  export default AdminLayout;
-
-
-
+export default AdminLayout;
 
 
+
+
+
+  

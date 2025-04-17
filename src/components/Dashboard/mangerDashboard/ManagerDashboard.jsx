@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Card } from "react-bootstrap";
+import { Grid, Card, CardContent, Typography, Box, Skeleton, Paper } from "@mui/material";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { FaUsers, FaBuilding, FaDollarSign } from "react-icons/fa";
 import { db } from "../../../fbconfig";
 import { ref, onValue } from "firebase/database";
 import { useNavigate } from "react-router-dom";
-import { Skeleton, Box } from "@mui/material"; 
 
 const AdminDashboard = () => {
   const [userCount, setUserCount] = useState(0);
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,7 +21,7 @@ const AdminDashboard = () => {
       } else {
         setUserCount(0);
       }
-      setLoading(false); 
+      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -66,56 +64,65 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <Container>
-      <Row>
+    <Box sx={{ padding: 4 }}>
+      <Grid container spacing={3}>
         {stats.map((stat, index) => (
-          <Col md={4} key={index}>
+          <Grid item xs={12} md={4} key={index}>
             {loading ? (
               <Skeleton variant="rectangular" width="100%" height={180} />
             ) : (
               <Card
-                className="text-white text-center"
-                style={{
+                sx={{
                   backgroundColor: stat.color,
+                  color: "#fff",
                   cursor: stat.path ? "pointer" : "default",
+                  height: "100%",
+                  borderRadius: 3,
+                  boxShadow: 3,
+                  transition: "0.3s",
+                  "&:hover": {
+                    transform: stat.path ? "scale(1.02)" : "none",
+                  },
                 }}
                 onClick={() => stat.path && handleNavigate(stat.path)}
               >
-                <Card.Body>
-                  <Card.Title className="d-flex align-items-center justify-content-center">
+                <CardContent sx={{ textAlign: "center" }}>
+                  <Box display="flex" justifyContent="center" alignItems="center" mb={1} fontSize={24}>
                     {stat.icon}
-                    <span className="ms-2">{stat.title}</span>
-                  </Card.Title>
-                  <Card.Text style={{ fontSize: "1.5rem" }}>{stat.value}</Card.Text>
-                </Card.Body>
+                    <Typography variant="h6" component="div" sx={{ ml: 1 }}>
+                      {stat.title}
+                    </Typography>
+                  </Box>
+                  <Typography variant="h5" component="div">
+                    {stat.value}
+                  </Typography>
+                </CardContent>
               </Card>
             )}
-          </Col>
+          </Grid>
         ))}
-      </Row>
+      </Grid>
 
-      <Row>
-        <Col md={12}>
-          <Card className="p-3">
-            <Card.Title>Employees per Department</Card.Title>
-            {loading ? (
-              <Box sx={{ width: "100%" }}>
-                <Skeleton variant="rectangular" width="100%" height={300} />
-              </Box>
-            ) : (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={chartData}>
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="employees" fill="#8884d8" barSize={40} />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+      <Box mt={5}>
+        <Paper elevation={3} sx={{ padding: 3, borderRadius: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            Employees per Department
+          </Typography>
+          {loading ? (
+            <Skeleton variant="rectangular" width="100%" height={300} />
+          ) : (
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={chartData}>
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="employees" fill="#8884d8" barSize={40} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </Paper>
+      </Box>
+    </Box>
   );
 };
 

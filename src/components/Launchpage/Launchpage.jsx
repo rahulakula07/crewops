@@ -20,7 +20,7 @@ const LandingPage = () => {
         <div className="container text-center">
           <h1>Create a Stunning HR Management Website in Webflow with HRbes</h1>
           <p>Experience a modern Webflow template for HR management software, offering features to build business websites, including Recruitment, Payroll, Employee Management, and more!</p>
-          <button className=" explore-demo" onClick={()=>navigate("/Signup")}>Explore Now</button>
+          <button className=" explore-demo" onClick={()=>navigate("/Login")}>Explore Now</button>
         </div>
       </header>  
     </div>

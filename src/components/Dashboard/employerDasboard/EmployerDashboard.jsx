@@ -92,7 +92,7 @@ const UserDashboard = () => {
       const leaveData = {
         ...leaveForm,
         userEmail: user.email,
-        userName: user.displayName || "Unknown User",
+        userName: user.displayName || user.email.split("@")[0] || "Unknown User",
         submittedAt: new Date().toISOString(),
       };
 
@@ -235,6 +235,25 @@ const UserDashboard = () => {
             value={leaveForm.reason}
             onChange={handleFormChange}
             margin="normal"
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#ccc", // Normal border color
+                },
+                "&:hover fieldset": {
+                  borderColor: "#aaa", // Hover border color
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "transparent", // Remove blue border on focus
+                },
+              },
+              "& .MuiOutlinedInput-root.Mui-focused": {
+                boxShadow: "none", // Remove focus glow
+              },
+              "& .MuiInputBase-input": {
+                outline: "none", // Remove outline from input field
+              },
+            }}
           />
           <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
             <Button

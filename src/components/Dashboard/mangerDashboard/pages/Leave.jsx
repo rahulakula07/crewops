@@ -120,50 +120,68 @@ const Leave = () => {
           leaveApplications.map((leave) => (
             <Grid item xs={12} sm={6} md={4} key={leave.id}>
               <Paper
-                elevation={3}
+                elevation={4}
                 sx={{
-                  p: 2,
+                  p: 3,
                   display: "flex",
                   flexDirection: "column",
-                  fontFamily: "Roboto",
-                  minHeight: {
+                  justifyContent: "space-between",
+                  borderRadius: 3,
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                  transition: "transform 0.2s ease-in-out",
+                  "&:hover": {
+                    transform: "translateY(-4px)",
+                    boxShadow: "0 6px 16px rgba(0, 0, 0, 0.15)",
+                  },
+                  bgcolor: "background.paper",
+                  height: {
                     xs: "auto",
-                    sm: 240,
-                    md: 260,
-                    lg: 280,
+                    sm: 260,
+                    md: 280,
+                    lg: 300,
                   },
                 }}
               >
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontSize: {
-                      xs: "1rem",
-                      sm: "1.1rem",
-                      md: "1.2rem",
-                      lg: "1.3rem",
-                    },
-                  }}
-                >
-                  {leave.userName}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  sx={{
-                    fontSize: {
-                      xs: "0.8rem",
-                      sm: "0.85rem",
-                    },
-                  }}
-                >
-                  {leave.userEmail}
-                </Typography>
-                <Typography variant="body1">
-                  From: {new Date(leave.from).toLocaleDateString()} <br />
-                  To: {new Date(leave.to).toLocaleDateString()}
-                </Typography>
-                <Typography variant="body1">Reason: {leave.reason}</Typography>
+                <Box sx={{ mb: 1 }}>
+                  <Typography
+                    variant="h6"
+                    fontWeight={600}
+                    sx={{
+                      fontSize: {
+                        xs: "1.1rem",
+                        sm: "1.2rem",
+                      },
+                    }}
+                  >
+                    {leave.userName}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      fontSize: {
+                        xs: "0.85rem",
+                      },
+                    }}
+                  >
+                    {leave.userEmail}
+                  </Typography>
+                </Box>
+
+                <Box sx={{ mb: 1 }}>
+                  <Typography variant="body2" sx={{ mb: 0.5 }}>
+                    <strong>From:</strong>{" "}
+                    {new Date(leave.from).toLocaleDateString()}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 0.5 }}>
+                    <strong>To:</strong>{" "}
+                    {new Date(leave.to).toLocaleDateString()}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Reason:</strong> {leave.reason}
+                  </Typography>
+                </Box>
+
                 <Box
                   sx={{
                     display: "flex",
@@ -177,17 +195,8 @@ const Leave = () => {
                     variant="contained"
                     color="success"
                     size="small"
-                    sx={{
-                      fontSize: {
-                        xs: "0.7rem",
-                        sm: "0.75rem",
-                      },
-                      px: {
-                        xs: 1,
-                        sm: 2,
-                      },
-                    }}
                     onClick={() => handleAccept(leave.id)}
+                    sx={{ textTransform: "capitalize", flex: 1 }}
                   >
                     Accept
                   </Button>
@@ -195,30 +204,16 @@ const Leave = () => {
                     variant="contained"
                     color="error"
                     size="small"
-                    sx={{
-                      fontSize: {
-                        xs: "0.7rem",
-                        sm: "0.75rem",
-                      },
-                      px: {
-                        xs: 1,
-                        sm: 2,
-                      },
-                    }}
                     onClick={() => handleReject(leave.id)}
+                    sx={{ textTransform: "capitalize", flex: 1 }}
                   >
                     Reject
                   </Button>
                   <Button
                     variant="outlined"
                     size="small"
-                    sx={{
-                      fontSize: {
-                        xs: "0.7rem",
-                        sm: "0.75rem",
-                      },
-                    }}
                     onClick={() => handleOpenModal(leave)}
+                    sx={{ textTransform: "capitalize", flex: 1 }}
                   >
                     View
                   </Button>
@@ -275,7 +270,6 @@ const Leave = () => {
         </Modal>
       )}
 
-      {/* Toast Container */}
       <ToastContainer position="top-right" autoClose={3000} />
     </Container>
   );

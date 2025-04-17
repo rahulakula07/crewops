@@ -69,8 +69,12 @@ const Sidebar = () => {
                   sx={{
                     backgroundColor: isActive ? "#7C3AED" : "transparent",
                     color: isActive ? "#fff" : "inherit",
+                    borderRadius: "8px", // Added border radius here
+                    paddingLeft: isActive ? "20px" : "16px", // Added padding when active
+                    paddingRight: "16px", // Consistent padding on the right
                     "&:hover": {
                       backgroundColor: isActive ? "#5B21B6" : "#f0f0f0",
+                      borderRadius: "8px", // Added border radius on hover as well
                     },
                   }}
                 >
