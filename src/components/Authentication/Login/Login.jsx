@@ -16,8 +16,7 @@
 //   Paper,
 // } from "@mui/material";
 // import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-// import { ToastContainer, toast } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
+// import { toast } from "react-toastify";
 
 // const Login = () => {
 //   const [login, setLogin] = useState({ email: "", password: "" });
@@ -41,9 +40,11 @@
 //         for (let key in users) {
 //           if (users[key].email === email) {
 //             toast.success("Logged in successfully!");
-//             if (role === "manager") navigate("/admins/AdminDashboard");
-//             else if (role === "employer") navigate("/user/UserDashboard");
-//             else navigate("/Launchpage");
+//             setTimeout(() => {
+//               if (role === "manager") navigate("/admins/AdminDashboard");
+//               else if (role === "employer") navigate("/user/UserDashboard");
+//               else navigate("/Launchpage");
+//             }, 1000); // Delay for toast to show
 //             return true;
 //           }
 //         }
@@ -54,12 +55,12 @@
 
 //   const handleLogin = async (e) => {
 //     e.preventDefault();
+//     if (!login.email || !login.password) {
+//       toast.warn("Please enter both email and password.");
+//       return;
+//     }
 //     try {
-//       const userCredential = await signInWithEmailAndPassword(
-//         author,
-//         login.email,
-//         login.password
-//       );
+//       await signInWithEmailAndPassword(author, login.email, login.password);
 //       const found = await checkUserRoleAndRedirect(login.email);
 //       if (!found) toast.error("User not found in database.");
 //     } catch (err) {
@@ -80,7 +81,6 @@
 //         alignItems: "center",
 //       }}
 //     >
-//       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
 //       <Paper
 //         elevation={3}
 //         sx={{
@@ -92,7 +92,7 @@
 //         }}
 //       >
 //         <Box display="flex" justifyContent="center" mb={2}>
-//           {/* <FullLogo /> */}
+//           {/* Optional Logo */}
 //         </Box>
 
 //         <Typography variant="subtitle1" sx={{ mb: 3, color: "text.secondary" }}>
@@ -187,6 +187,7 @@ import {
   Checkbox,
   Link,
   Paper,
+  Stack,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { toast } from "react-toastify";
@@ -217,7 +218,7 @@ const Login = () => {
               if (role === "manager") navigate("/admins/AdminDashboard");
               else if (role === "employer") navigate("/user/UserDashboard");
               else navigate("/Launchpage");
-            }, 1000); // Delay for toast to show
+            }, 1000);
             return true;
           }
         }
@@ -242,11 +243,21 @@ const Login = () => {
     }
   };
 
+  // 💡 Demo login fill function
+  const fillDemoLogin = (role) => {
+    if (role === "employer") {
+      setLogin({ email: "sagar@gmail.com", password: "123456" });
+    } else if (role === "manager") {
+      setLogin({ email: "rahulgoud@gmail.com", password: "123456" });
+    }
+  };
+
   return (
     <Box
       sx={{
         height: "100vh",
-        background: "linear-gradient(45deg, rgba(238,119,82,0.2), rgba(231,60,126,0.2), rgba(35,166,213,0.2), rgba(35,213,171,0.2))",
+        background:
+          "linear-gradient(45deg, rgba(238,119,82,0.2), rgba(231,60,126,0.2), rgba(35,166,213,0.2), rgba(35,213,171,0.2))",
         backgroundSize: "400% 400%",
         animation: "gradient 15s ease infinite",
         display: "flex",
@@ -265,7 +276,7 @@ const Login = () => {
         }}
       >
         <Box display="flex" justifyContent="center" mb={2}>
-          {/* Optional Logo */}
+          {/* Optional logo or icon */}
         </Box>
 
         <Typography variant="subtitle1" sx={{ mb: 3, color: "text.secondary" }}>
@@ -337,10 +348,27 @@ const Login = () => {
             Create an account
           </Link>
         </Typography>
+
+        {/* ✅ Demo Buttons */}
+        <Stack direction="column" spacing={1} mt={3}>
+          <Button
+            variant="outlined"
+            fullWidth
+            onClick={() => fillDemoLogin("employer")}
+          >
+            Use Employer Demo
+          </Button>
+          <Button
+            variant="outlined"
+            fullWidth
+            onClick={() => fillDemoLogin("manager")}
+          >
+            Use Manager Demo
+          </Button>
+        </Stack>
       </Paper>
     </Box>
   );
 };
 
 export default Login;
-

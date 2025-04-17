@@ -209,7 +209,7 @@ const Departments = () => {
                 <li
                   key={index}
                   className="list-group-item d-flex justify-content-between align-items-center"
-                  style={{ color: "black" }} // 👈 Ensure visible text
+                  style={{ color: "black" }} 
                 >
                   {task}
                   <Button
