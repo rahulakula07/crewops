@@ -9,11 +9,13 @@ import {
   ListItem,
   ListItemText,
   TextField,
+  Skeleton,
 } from "@mui/material";
 
 const UserTasks = () => {
   const [tasks, setTasks] = useState([]);
   const [selectedTaskId, setSelectedTaskId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const auth = getAuth();
   const db = getDatabase();
 
@@ -49,11 +51,14 @@ const UserTasks = () => {
               }));
               setTasks(taskList);
             }
+            setIsLoading(false); // Set loading to false once data is fetched
           } else {
             setTasks([]);
+            setIsLoading(false); // Set loading to false if no tasks
           }
         } else {
           setTasks([]);
+          setIsLoading(false); // Set loading to false if no employers
         }
       });
     }
@@ -73,7 +78,7 @@ const UserTasks = () => {
 
     const taskRef = ref(db, `users/employers/${user.uid}/tasks/${taskId}`);
     update(taskRef, { status });
-    setSelectedTaskId(null); // hide input after saving
+    setSelectedTaskId(null); // Hide input after saving
   };
 
   const handleTaskClick = (taskId) => {
@@ -86,14 +91,30 @@ const UserTasks = () => {
         <Typography variant="h5" gutterBottom>
           My Tasks
         </Typography>
-        {tasks.length === 0 ? (
+        {isLoading ? (
+          // Skeleton loader for tasks while loading
+          new Array(5).fill(0).map((_, index) => (
+            <ListItem key={index} style={{ display: "block", cursor: "pointer" }}>
+              <ListItemText
+                primary={<Skeleton variant="text" width={200} />}
+                secondary={<Skeleton variant="text" width={100} />}
+              />
+              <Skeleton variant="circular" width={40} height={40} />
+            </ListItem>
+          ))
+        ) : tasks.length === 0 ? (
           <Typography>No tasks assigned.</Typography>
         ) : (
           <List>
             {tasks.map((task) => (
               <ListItem
                 key={task.id}
-                style={{ display: "block", cursor: "pointer" }}
+                style={{
+                  display: "block",
+                  cursor: "pointer",
+                  backgroundColor: selectedTaskId === task.id ? "#f3f4f6" : "transparent", // Highlight selected task
+                  border: selectedTaskId === task.id ? "2px solid #7C3AED" : "none", // Border for selected task
+                }}
                 onClick={() => handleTaskClick(task.id)}
               >
                 <ListItemText

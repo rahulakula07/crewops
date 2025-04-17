@@ -1,15 +1,20 @@
 import React from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { author } from "../../fbconfig";
 
 const AuthRedirect = ({ children }) => {
   const [user, loading] = useAuthState(author);
+  const location = useLocation();
 
   if (loading) return <div>Loading...</div>;
 
-  // If user is already logged in, redirect them
-  return user ? <Navigate to="/" replace /> : children;
+  return user ? (
+    <Navigate to={location.state?.from || "/"} replace />
+  ) : (
+    children
+  );
 };
 
 export default AuthRedirect;
+

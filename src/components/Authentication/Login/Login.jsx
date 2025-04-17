@@ -1,27 +1,198 @@
+// import React, { useState } from "react";
+// import { signInWithEmailAndPassword } from "firebase/auth";
+// import { getDatabase, ref, get } from "firebase/database";
+// import { useNavigate, Link as RouterLink } from "react-router-dom";
+// import { author } from "../../../fbconfig";
+// import {
+//   Container,
+//   TextField,
+//   Button,
+//   Typography,
+//   Box,
+//   Avatar,
+//   FormControlLabel,
+//   Checkbox,
+//   Link,
+//   Paper,
+// } from "@mui/material";
+// import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+// import { ToastContainer, toast } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+
+// const Login = () => {
+//   const [login, setLogin] = useState({ email: "", password: "" });
+//   const navigate = useNavigate();
+
+//   const handleDetails = (e) => {
+//     setLogin({ ...login, [e.target.name]: e.target.value });
+//   };
+
+//   const checkUserRoleAndRedirect = async (email) => {
+//     const db = getDatabase();
+//     const paths = [
+//       { refPath: "users/employers", role: "employer" },
+//       { refPath: "users/managers", role: "manager" },
+//     ];
+
+//     for (const { refPath, role } of paths) {
+//       const snapshot = await get(ref(db, refPath));
+//       if (snapshot.exists()) {
+//         const users = snapshot.val();
+//         for (let key in users) {
+//           if (users[key].email === email) {
+//             toast.success("Logged in successfully!");
+//             if (role === "manager") navigate("/admins/AdminDashboard");
+//             else if (role === "employer") navigate("/user/UserDashboard");
+//             else navigate("/Launchpage");
+//             return true;
+//           }
+//         }
+//       }
+//     }
+//     return false;
+//   };
+
+//   const handleLogin = async (e) => {
+//     e.preventDefault();
+//     try {
+//       const userCredential = await signInWithEmailAndPassword(
+//         author,
+//         login.email,
+//         login.password
+//       );
+//       const found = await checkUserRoleAndRedirect(login.email);
+//       if (!found) toast.error("User not found in database.");
+//     } catch (err) {
+//       console.error(err);
+//       toast.error("Login failed. Please check your credentials.");
+//     }
+//   };
+
+//   return (
+//     <Box
+//       sx={{
+//         height: "100vh",
+//         background: "linear-gradient(45deg, rgba(238,119,82,0.2), rgba(231,60,126,0.2), rgba(35,166,213,0.2), rgba(35,213,171,0.2))",
+//         backgroundSize: "400% 400%",
+//         animation: "gradient 15s ease infinite",
+//         display: "flex",
+//         justifyContent: "center",
+//         alignItems: "center",
+//       }}
+//     >
+//       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+//       <Paper
+//         elevation={3}
+//         sx={{
+//           p: 4,
+//           borderRadius: 3,
+//           width: "100%",
+//           maxWidth: 400,
+//           textAlign: "center",
+//         }}
+//       >
+//         <Box display="flex" justifyContent="center" mb={2}>
+//           {/* <FullLogo /> */}
+//         </Box>
+
+//         <Typography variant="subtitle1" sx={{ mb: 3, color: "text.secondary" }}>
+//           Sign In on MatDash
+//         </Typography>
+
+//         <form onSubmit={handleLogin}>
+//           <TextField
+//             fullWidth
+//             label="Username"
+//             name="email"
+//             type="email"
+//             value={login.email}
+//             onChange={handleDetails}
+//             margin="normal"
+//             variant="outlined"
+//           />
+//           <TextField
+//             fullWidth
+//             label="Password"
+//             name="password"
+//             type="password"
+//             value={login.password}
+//             onChange={handleDetails}
+//             margin="normal"
+//             variant="outlined"
+//           />
+
+//           <Box
+//             display="flex"
+//             justifyContent="space-between"
+//             alignItems="center"
+//             sx={{ mt: 1 }}
+//           >
+//             <FormControlLabel
+//               control={<Checkbox color="primary" />}
+//               label="Remember this Device"
+//             />
+//             <Link href="#" variant="body2" color="primary">
+//               Forgot Password?
+//             </Link>
+//           </Box>
+
+//           <Button
+//             type="submit"
+//             fullWidth
+//             variant="contained"
+//             sx={{
+//               mt: 3,
+//               backgroundColor: "#7C3AED",
+//               "&:hover": { backgroundColor: "#5B21B6" },
+//               borderRadius: "8px",
+//               textTransform: "none",
+//               fontWeight: 600,
+//             }}
+//           >
+//             Sign in
+//           </Button>
+//         </form>
+
+//         <Typography variant="body2" sx={{ mt: 3 }}>
+//           New to Matdash?{" "}
+//           <Link
+//             component={RouterLink}
+//             to="/signup"
+//             color="primary"
+//             underline="hover"
+//           >
+//             Create an account
+//           </Link>
+//         </Typography>
+//       </Paper>
+//     </Box>
+//   );
+// };
+
+// export default Login;
+
 import React, { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { getDatabase, ref, get } from "firebase/database";
-import { useNavigate } from "react-router-dom";
-import './login.css';
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { author } from "../../../fbconfig";
-
 import {
-  Box,
+  Container,
   TextField,
   Button,
   Typography,
-  Container,
+  Box,
   Avatar,
-  CssBaseline,
+  FormControlLabel,
+  Checkbox,
+  Link,
+  Paper,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import { toast } from "react-toastify";
 
 const Login = () => {
-  const [login, setLogin] = useState({
-    email: "",
-    password: "",
-  });
-
+  const [login, setLogin] = useState({ email: "", password: "" });
   const navigate = useNavigate();
 
   const handleDetails = (e) => {
@@ -30,142 +201,146 @@ const Login = () => {
 
   const checkUserRoleAndRedirect = async (email) => {
     const db = getDatabase();
-
-    const pathsToCheck = [
-      { refPath: "users/employers", defaultRole: "employer" },
-      { refPath: "users/managers", defaultRole: "manager" }
+    const paths = [
+      { refPath: "users/employers", role: "employer" },
+      { refPath: "users/managers", role: "manager" },
     ];
 
-    for (const path of pathsToCheck) {
-      const dbRef = ref(db, path.refPath);
-      const snapshot = await get(dbRef);
-
+    for (const { refPath, role } of paths) {
+      const snapshot = await get(ref(db, refPath));
       if (snapshot.exists()) {
-        const usersData = snapshot.val();
-
-        for (const username in usersData) {
-          const user = usersData[username];
-          if (user.email === email) {
-            const role = user.role || path.defaultRole;
-
-            // ✅ Redirect based on role
-            if (role === "manager") {
-              navigate("/admins/AdminDashboard");
-            } else if (role === "employer") {
-              navigate("/user/UserDashboard");
-            } else {
-              navigate("/Dashboard");
-            }
-            
-
-            return true; 
+        const users = snapshot.val();
+        for (let key in users) {
+          if (users[key].email === email) {
+            toast.success("Logged in successfully!");
+            setTimeout(() => {
+              if (role === "manager") navigate("/admins/AdminDashboard");
+              else if (role === "employer") navigate("/user/UserDashboard");
+              else navigate("/Launchpage");
+            }, 1000); // Delay for toast to show
+            return true;
           }
         }
       }
     }
-
     return false;
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const { email, password } = login;
-
+    if (!login.email || !login.password) {
+      toast.warn("Please enter both email and password.");
+      return;
+    }
     try {
-      const userCredential = await signInWithEmailAndPassword(author, email, password);
-      const user = userCredential.user;
-
-      const found = await checkUserRoleAndRedirect(email);
-      if (!found) {
-        alert("User not found in database.");
-      } else {
-        alert("Logged in successfully!");
-      }
-
+      await signInWithEmailAndPassword(author, login.email, login.password);
+      const found = await checkUserRoleAndRedirect(login.email);
+      if (!found) toast.error("User not found in database.");
     } catch (err) {
       console.error(err);
-      alert("Login failed. Please check your credentials.");
+      toast.error("Login failed. Please check your credentials.");
     }
   };
 
   return (
-    <Container className="login-container" component="main" maxWidth="xs"
+    <Box
       sx={{
         height: "100vh",
+        background: "linear-gradient(45deg, rgba(238,119,82,0.2), rgba(231,60,126,0.2), rgba(35,166,213,0.2), rgba(35,213,171,0.2))",
+        backgroundSize: "400% 400%",
+        animation: "gradient 15s ease infinite",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#000",
       }}
     >
-      <CssBaseline />
-      <Box
+      <Paper
+        elevation={3}
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          backgroundColor: "#121212",
-          padding: 4,
-          boxShadow: "4px 4px 20px rgba(155, 89, 182, 0.3)",
+          p: 4,
+          borderRadius: 3,
           width: "100%",
-          maxWidth: "400px",
+          maxWidth: 400,
+          textAlign: "center",
         }}
       >
-        <Avatar sx={{ m: 1, bgcolor: "#9b59b6" }}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5" sx={{ color: "#fff" }}>
-          Log In
+        <Box display="flex" justifyContent="center" mb={2}>
+          {/* Optional Logo */}
+        </Box>
+
+        <Typography variant="subtitle1" sx={{ mb: 3, color: "text.secondary" }}>
+          Sign In on MatDash
         </Typography>
-        <Box component="form" onSubmit={handleLogin} sx={{ mt: 3, width: "100%" }}>
+
+        <form onSubmit={handleLogin}>
           <TextField
             fullWidth
-            label="email"
+            label="Username"
             name="email"
             type="email"
-            variant="standard"
-            margin="normal"
+            value={login.email}
             onChange={handleDetails}
-            required
-            sx={{
-              '& .MuiInput-underline:after': { borderBottomColor: '#7B43A1' },
-              '& input': { color: 'white' }
-            }}
+            margin="normal"
+            variant="outlined"
           />
           <TextField
             fullWidth
-            label="password"
+            label="Password"
             name="password"
             type="password"
-            variant="standard"
-            margin="normal"
+            value={login.password}
             onChange={handleDetails}
-            required
-            sx={{
-              '& .MuiInput-underline:after': { borderBottomColor: '#7B43A1' },
-              '& input': { color: 'white' }
-            }}
+            margin="normal"
+            variant="outlined"
           />
+
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            sx={{ mt: 1 }}
+          >
+            <FormControlLabel
+              control={<Checkbox color="primary" />}
+              label="Remember this Device"
+            />
+            <Link href="#" variant="body2" color="primary">
+              Forgot Password?
+            </Link>
+          </Box>
+
           <Button
             type="submit"
             fullWidth
             variant="contained"
             sx={{
-              mt: 2,
-              mb: 2,
-              backgroundColor: "#9b59b6",
-              color: "white",
-              "&:hover": { backgroundColor: "#8e44ad" },
+              mt: 3,
+              backgroundColor: "#7C3AED",
+              "&:hover": { backgroundColor: "#5B21B6" },
+              borderRadius: "8px",
+              textTransform: "none",
+              fontWeight: 600,
             }}
           >
-            Login
+            Sign in
           </Button>
-        </Box>
-      </Box>
-    </Container>
+        </form>
+
+        <Typography variant="body2" sx={{ mt: 3 }}>
+          New to Matdash?{" "}
+          <Link
+            component={RouterLink}
+            to="/signup"
+            color="primary"
+            underline="hover"
+          >
+            Create an account
+          </Link>
+        </Typography>
+      </Paper>
+    </Box>
   );
 };
 
 export default Login;
-
 

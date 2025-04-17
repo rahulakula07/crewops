@@ -1,22 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../../../fbconfig";
 import { ref, get, update } from "firebase/database";
-import { Button, TextField } from "@mui/material";
+import {
+  Button,
+  TextField,
+  CircularProgress,
+} from "@mui/material";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Departments = () => {
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedUser, setSelectedUser] = useState(null); 
+  const [selectedUser, setSelectedUser] = useState(null);
   const [newTask, setNewTask] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const departments = ["HR", "Engineering", "Marketing", "Sales", "Finance"];
 
   const fetchUsersByDepartment = async (department) => {
     setSelectedDepartment(department);
     setSearchQuery("");
-    setSelectedUser(null); 
+    setSelectedUser(null);
+    setLoading(true);
 
     try {
       const usersRef = ref(db, "users/employers");
@@ -24,9 +32,8 @@ const Departments = () => {
 
       if (snapshot.exists()) {
         const data = snapshot.val();
-        console.log(data)
         const departmentUsers = Object.keys(data)
-          .map((key) => ({ nameKey: key, ...data[key] })) 
+          .map((key) => ({ nameKey: key, ...data[key] }))
           .filter((user) => user.department === department);
 
         setUsers(departmentUsers);
@@ -37,6 +44,9 @@ const Departments = () => {
       }
     } catch (error) {
       console.error("Error fetching department users:", error);
+      toast.error("Failed to fetch users.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -51,23 +61,31 @@ const Departments = () => {
   };
 
   const handleUserClick = (user) => {
-    setSelectedUser(user); 
+    setSelectedUser(user);
   };
 
   const handleAddTask = async () => {
-    if (!newTask.trim() || !selectedUser) return;
-    const updatedTasks = selectedUser.tasks ? [...selectedUser.tasks, newTask] : [newTask]; 
+    if (!newTask.trim() || !selectedUser) {
+      toast.warn("Please enter a task and select a user.");
+      return;
+    }
+
+    const updatedTasks = selectedUser.tasks
+      ? [...selectedUser.tasks, newTask]
+      : [newTask];
 
     try {
       await update(ref(db, `users/employers/${selectedUser.nameKey}`), {
         ...selectedUser,
-        tasks: updatedTasks, 
+        tasks: updatedTasks,
       });
 
       setSelectedUser({ ...selectedUser, tasks: updatedTasks });
       setNewTask("");
+      toast.success("Task added successfully!");
     } catch (error) {
       console.error("Error adding task:", error);
+      toast.error("Failed to add task.");
     }
   };
 
@@ -82,8 +100,10 @@ const Departments = () => {
       });
 
       setSelectedUser({ ...selectedUser, tasks: updatedTasks });
+      toast.info("Task deleted.");
     } catch (error) {
       console.error("Error deleting task:", error);
+      toast.error("Failed to delete task.");
     }
   };
 
@@ -91,7 +111,7 @@ const Departments = () => {
     <div className="d-flex flex-column align-items-center p-4">
       <h4 className="text-white mb-3">Departments</h4>
 
-      <div className="mb-3">
+      <div>
         {departments.map((dept) => (
           <Button
             key={dept}
@@ -99,10 +119,10 @@ const Departments = () => {
             onClick={() => fetchUsersByDepartment(dept)}
             sx={{
               margin: "5px",
-              color: "black",
+              color: "black", 
               backgroundColor: "white",
               "&:hover": { backgroundColor: "#f0f0f0" },
-              border: "white",
+              border: "1px solid #ccc",
             }}
           >
             {dept}
@@ -119,9 +139,9 @@ const Departments = () => {
           onChange={handleSearch}
           sx={{
             backgroundColor: "white",
-            color: "green",
             borderRadius: "5px",
             mb: 2,
+            border: "1px solid #ccc", 
             "& .MuiInputBase-input": { color: "black" },
             "& .MuiInput-underline:before, & .MuiInput-underline:after": {
               borderBottom: "none",
@@ -131,7 +151,9 @@ const Departments = () => {
       )}
 
       <div className="w-100">
-        {selectedDepartment && (
+        {selectedDepartment && loading ? (
+          <CircularProgress />
+        ) : (
           <>
             <h5 className="text-light">{selectedDepartment} Department</h5>
             {filteredUsers.length > 0 ? (
@@ -140,7 +162,7 @@ const Departments = () => {
                   <li
                     key={user.id}
                     className="list-group-item p-2 border rounded shadow-sm my-2"
-                    onClick={() => handleUserClick(user)} 
+                    onClick={() => handleUserClick(user)}
                     style={{ cursor: "pointer" }}
                   >
                     <strong>{user.name}</strong> - {user.email}
@@ -157,7 +179,7 @@ const Departments = () => {
       {/* ✅ Selected User Task Management */}
       {selectedUser && (
         <div className="mt-4 w-100">
-          <h5 className="text-light">Tasks for {selectedUser.name}</h5>
+          <h5 className="text-light" style={{color:"black"}}>Tasks for {selectedUser.name}</h5>
 
           <TextField
             label="New Task"
@@ -169,6 +191,7 @@ const Departments = () => {
               backgroundColor: "white",
               borderRadius: "5px",
               mt: 2,
+              border: "1px solid #ccc", 
               "& .MuiInputBase-input": { color: "black" },
               "& .MuiInput-underline:before, & .MuiInput-underline:after": {
                 borderBottom: "none",
@@ -176,11 +199,7 @@ const Departments = () => {
             }}
           />
 
-          <Button
-            onClick={handleAddTask}
-            variant="contained"
-            sx={{ mt: 2 }}
-          >
+          <Button onClick={handleAddTask} variant="contained" sx={{ mt: 2 }}>
             Add Task
           </Button>
 
@@ -190,6 +209,7 @@ const Departments = () => {
                 <li
                   key={index}
                   className="list-group-item d-flex justify-content-between align-items-center"
+                  style={{ color: "black" }} // 👈 Ensure visible text
                 >
                   {task}
                   <Button
@@ -211,4 +231,3 @@ const Departments = () => {
 };
 
 export default Departments;
-

@@ -1,20 +1,30 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Drawer,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
+  Skeleton,
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import WorkIcon from "@mui/icons-material/Work";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate, useLocation } from "react-router-dom";
 
 const drawerWidth = 240;
 
 const Sidebar = () => {
-  const navigate = useNavigate(); 
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const menuItems = [
     { text: "Dashboard", icon: <DashboardIcon />, path: "/user/Userdashboard" },
@@ -38,16 +48,44 @@ const Sidebar = () => {
       }}
     >
       <List>
-        {menuItems.map((item, index) => (
-          <ListItem
-            button
-            key={index}
-            onClick={() => handleNavigation(item.path)} 
-          >
-            <ListItemIcon>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.text} />
-          </ListItem>
-        ))}
+        {isLoading
+          ? new Array(3).fill(0).map((_, index) => (
+              <ListItem key={index}>
+                <ListItemIcon>
+                  <Skeleton variant="circular" width={30} height={30} />
+                </ListItemIcon>
+                <ListItemText>
+                  <Skeleton variant="text" width={100} />
+                </ListItemText>
+              </ListItem>
+            ))
+          : menuItems.map((item, index) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <ListItem
+                  button
+                  key={index}
+                  onClick={() => handleNavigation(item.path)}
+                  sx={{
+                    backgroundColor: isActive ? "#7C3AED" : "transparent",
+                    color: isActive ? "#fff" : "inherit",
+                    "&:hover": {
+                      backgroundColor: isActive ? "#5B21B6" : "#f0f0f0",
+                    },
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      color: isActive ? "#fff" : "inherit",
+                      minWidth: 40,
+                    }}
+                  >
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText primary={item.text} />
+                </ListItem>
+              );
+            })}
       </List>
     </Drawer>
   );

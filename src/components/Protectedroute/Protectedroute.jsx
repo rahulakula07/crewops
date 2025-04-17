@@ -13,10 +13,10 @@ const ProtectedRoute = ({ allowedRoles }) => {
   useEffect(() => {
     const fetchUserRole = async () => {
       if (!user) return;
-      const db = getDatabase();
-      const uid = user.uid;
 
+      const db = getDatabase();
       const paths = ["users/employers", "users/managers"];
+
       for (let path of paths) {
         const snapshot = await get(ref(db, path));
         const data = snapshot.val();
@@ -44,16 +44,14 @@ const ProtectedRoute = ({ allowedRoles }) => {
 
   if (loading || checkingRole) return <div>Loading...</div>;
 
-  if (!user) return <Navigate to="/Login" replace />;
+  if (!user) return <Navigate to="/Login" state={{ from: location }} replace />;
 
-  // Not authorized
-  if (allowedRoles && !allowedRoles.includes(role)) {
-    return <Navigate to="/" replace />;
-  }
+  // if (allowedRoles && !allowedRoles.includes(role)) {
+  //   return <Navigate to="/" replace />;
+  // }
 
   return <Outlet />;
 };
 
 export default ProtectedRoute;
-
 

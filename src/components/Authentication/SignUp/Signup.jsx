@@ -2,33 +2,31 @@ import React, { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { author, db } from "../../../fbconfig";
 import { set, ref } from "firebase/database";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { toast } from "react-toastify";
+
 import {
   Box,
   TextField,
   Button,
   Typography,
-  Container,
-  Avatar,
-  CssBaseline,
+  Paper,
+  Link,
   MenuItem,
   Select,
   FormControl,
   InputLabel,
 } from "@mui/material";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-
 
 const Signup = () => {
   const [signup, setSignup] = useState({
     name: "",
     email: "",
     password: "",
-    userType: "",
     department: "",
   });
 
-  const navigate=useNavigate()
+  const navigate = useNavigate();
 
   const handleDetails = (e) => {
     setSignup({ ...signup, [e.target.name]: e.target.value });
@@ -36,147 +34,139 @@ const Signup = () => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    const { name, email, password, userType, department } = signup;
+    const { name, email, password, department } = signup;
+
     try {
       const signupUser = await createUserWithEmailAndPassword(
         author,
         email,
         password
       );
-      alert("Signup successfully done");
-      navigate("/Login")
-      
 
-
-      const userCategory =
-        userType.toLowerCase() === "manager" ? "managers" : "employers";
-
-      await set(ref(db, `users/${userCategory}/${name}`), {
-        name: name,
-        email: email,
-        userType: userType,
-        department: department,
+      await set(ref(db, `users/employers/${name}`), {
+        name,
+        email,
+        department,
         id: signupUser.user.uid,
       });
+
+      toast.success("Signup successful! ");
+      setTimeout(() => navigate("/Login"), 1500);
     } catch (err) {
       console.error(err);
-      alert("Signup failed. Please try again.");
-      
+      toast.error("Signup failed. Please try again.");
     }
   };
 
   return (
-    <div className="signup-container">
-      <Container
-        className="signup-box"
-        component="main"
-        maxWidth="xs"
+    <Box
+      sx={{
+        height: "100vh",
+        backgroundColor: "#d7e8f7",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Paper
+        elevation={3}
         sx={{
-          marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          backgroundColor: "#111",
-          padding: 4,
+          p: 4,
           borderRadius: 3,
+          width: "100%",
+          maxWidth: 400,
+          textAlign: "center",
+          backgroundColor: "#ffffff",
         }}
       >
-        <CssBaseline />
-        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <Avatar className="signup-avatar">
-            <PersonAddIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5" color="white">
-            Sign Up
-          </Typography>
-          <Box component="form" onSubmit={handleSignup} sx={{ mt: 3 }}>
-            <TextField
-              fullWidth
-              label="Name"
-              name="name"
-              type="text"
-              variant="standard"
-              margin="normal"
-              onChange={handleDetails}
-              required
-              sx={{
-                '& .MuiInput-underline:after': { borderBottomColor: '#7B43A1' },
-                '& input': { color: 'white' }
-              }}
-            />
-            <TextField
-              fullWidth
-              label="Email"
-              name="email"
-              type="email"
-              variant="standard"
-              margin="normal"
-              onChange={handleDetails}
-              required
-              sx={{
-                '& .MuiInput-underline:after': { borderBottomColor: '#7B43A1' },
-                '& input': { color: 'white' }
-              }}
-            />
-            <TextField
-              fullWidth
-              label="Password"
-              name="password"
-              type="password"
-              variant="standard"
-              margin="normal"
-              onChange={handleDetails}
-              required
-              sx={{
-                '& .MuiInput-underline:after': { borderBottomColor: '#7B43A1' },
-                '& input': { color: 'white' }
-              }}
-            />
-            <FormControl fullWidth margin="normal" variant="standard" sx={{ '& .MuiInput-underline:after': { borderBottomColor: '#7B43A1' } }}>
-              <InputLabel sx={{ color: 'white' }}>User Type</InputLabel>
-              <Select
-                name="userType"
-                value={signup.userType}
-                onChange={handleDetails}
-                required
-                sx={{ color: 'white' }}
-              >
-                <MenuItem value="manager">Manager</MenuItem>
-                <MenuItem value="employer">Employer</MenuItem>
-              </Select>
-            </FormControl>
+        <Typography
+          variant="h6"
+          sx={{ mb: 3, color: "text.primary", fontWeight: 600 }}
+        >
+          Create your MatDash Account
+        </Typography>
 
-            {/* Department Dropdown */}
-            <FormControl fullWidth margin="normal" variant="standard" sx={{ '& .MuiInput-underline:after': { borderBottomColor: '#7B43A1' } }}>
-              <InputLabel sx={{ color: 'white' }}>Department</InputLabel>
-              <Select
-                name="department"
-                value={signup.department}
-                onChange={handleDetails}
-                required
-                sx={{ color: 'white' }}
-              >
-                <MenuItem value="HR">HR</MenuItem>
-                <MenuItem value="Engineering">Engineering</MenuItem>
-                <MenuItem value="Marketing">Marketing</MenuItem>
-                <MenuItem value="Sales">Sales</MenuItem>
-                <MenuItem value="Finance">Finance</MenuItem>
-              </Select>
-            </FormControl>
+        <Box component="form" onSubmit={handleSignup}>
+          <TextField
+            fullWidth
+            size="small"
+            label="Name"
+            name="name"
+            type="text"
+            variant="outlined"
+            margin="normal"
+            onChange={handleDetails}
+            required
+          />
+          <TextField
+            fullWidth
+            size="small"
+            label="Email"
+            name="email"
+            type="email"
+            variant="outlined"
+            margin="normal"
+            onChange={handleDetails}
+            required
+          />
+          <TextField
+            fullWidth
+            size="small"
+            label="Password"
+            name="password"
+            type="password"
+            variant="outlined"
+            margin="normal"
+            onChange={handleDetails}
+            required
+          />
 
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              className="signup-button"
-              sx={{ mt: 2, mb: 2 }}
+          <FormControl fullWidth size="small" margin="normal" required>
+            <InputLabel>Department</InputLabel>
+            <Select
+              name="department"
+              value={signup.department}
+              onChange={handleDetails}
+              label="Department"
             >
-              Sign Up
-            </Button>
-          </Box>
+              <MenuItem value="HR">HR</MenuItem>
+              <MenuItem value="Engineering">Engineering</MenuItem>
+              <MenuItem value="Marketing">Marketing</MenuItem>
+              <MenuItem value="Sales">Sales</MenuItem>
+              <MenuItem value="Finance">Finance</MenuItem>
+            </Select>
+          </FormControl>
+
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{
+              mt: 3,
+              backgroundColor: "#7C3AED",
+              "&:hover": { backgroundColor: "#5B21B6" },
+              borderRadius: "8px",
+              textTransform: "none",
+              fontWeight: 600,
+            }}
+          >
+            Sign Up
+          </Button>
         </Box>
-      </Container>
-    </div>
+
+        <Typography variant="body2" sx={{ mt: 3 }}>
+          Already have an account?{" "}
+          <Link
+            component={RouterLink}
+            to="/Login"
+            color="primary"
+            underline="hover"
+          >
+            Sign in
+          </Link>
+        </Typography>
+      </Paper>
+    </Box>
   );
 };
 
