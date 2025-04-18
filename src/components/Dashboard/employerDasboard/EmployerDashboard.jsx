@@ -9,6 +9,8 @@ import {
   TextField,
   Modal,
   Skeleton,
+  Card,
+  CardContent,
 } from "@mui/material";
 import { ref, push } from "firebase/database";
 import { db } from "../../../fbconfig";
@@ -43,20 +45,20 @@ const UserDashboard = () => {
     {
       title: "Attendance Today",
       value: "Present",
-      icon: <ScheduleIcon />,
-      color: "#32CD32",
+      icon: <ScheduleIcon sx={{ fontSize: 30 }} />,
+      color: "#4caf50",
     },
     {
       title: "Pending Tasks",
       value: 3,
-      icon: <WorkIcon />,
-      color: "#FF6347",
+      icon: <WorkIcon sx={{ fontSize: 30 }} />,
+      color: "#f44336",
     },
     {
       title: "Leave Balance",
       value: "10 Days",
-      icon: <MonetizationOnIcon />,
-      color: "#FFD700",
+      icon: <MonetizationOnIcon sx={{ fontSize: 30 }} />,
+      color: "#ff9800",
     },
   ];
 
@@ -112,85 +114,85 @@ const UserDashboard = () => {
   };
 
   return (
-    <div className="user-dashboard-container">
-      <Container maxWidth="lg">
-        <Grid container spacing={3}>
-          {isLoading
-            ? new Array(3).fill(0).map((_, index) => (
-                <Grid item xs={12} sm={6} md={4} key={index}>
-                  <Paper
-                    elevation={3}
-                    sx={{
-                      p: 2,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      backgroundColor: "#f0f0f0",
-                    }}
-                  >
-                    <Box>
-                      <Skeleton variant="text" width={120} height={30} />
-                      <Skeleton variant="text" width={60} height={40} />
-                    </Box>
-                    <Skeleton variant="circular" width={40} height={40} />
-                  </Paper>
-                </Grid>
-              ))
-            : stats.map((stat, index) => (
-                <Grid item xs={12} sm={6} md={4} key={index}>
-                  <Paper
-                    elevation={3}
-                    sx={{
-                      p: 2,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      backgroundColor: stat.color,
-                      color: "white",
-                    }}
-                  >
-                    <Box>
-                      <Typography variant="h6">{stat.title}</Typography>
-                      <Typography variant="h4">{stat.value}</Typography>
-                    </Box>
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Grid container spacing={3}>
+        {stats.map((stat, index) => (
+          <Grid item xs={12} md={4} key={index}>
+            {isLoading ? (
+              <Skeleton variant="rectangular" width="100%" height={180} />
+            ) : (
+              <Card
+                sx={{
+                  backgroundColor: stat.color,
+                  color: "#fff",
+                  height: "100%",
+                  borderRadius: 3,
+                  boxShadow: 3,
+                  transition: "0.3s",
+                  "&:hover": {
+                    transform: "scale(1.02)",
+                  },
+                }}
+              >
+                <CardContent sx={{ textAlign: "center" }}>
+                  <Box display="flex" justifyContent="center" alignItems="center" mb={1}>
                     {stat.icon}
-                  </Paper>
-                </Grid>
-              ))}
+                    <Typography variant="h6" sx={{ ml: 1 }}>
+                      {stat.title}
+                    </Typography>
+                  </Box>
+                  <Typography variant="h5">{stat.value}</Typography>
+                </CardContent>
+              </Card>
+            )}
+          </Grid>
+        ))}
 
-          <Grid item xs={12}>
-            <Paper elevation={3} sx={{ p: 2 }}>
-              <Typography variant="h6" gutterBottom>
-                Task Progress
-              </Typography>
+        <Grid item xs={12}>
+          <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Task Progress
+            </Typography>
+            {isLoading ? (
+              <Skeleton variant="rectangular" width="100%" height={250} />
+            ) : (
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={taskData}>
-                  <XAxis dataKey="name" stroke="#8884d8" />
+                  <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
-                  <Bar dataKey="progress" fill="#8884d8" barSize={40} />
+                  <Bar dataKey="progress" fill="#1976d2" barSize={40} />
                 </BarChart>
               </ResponsiveContainer>
-            </Paper>
-          </Grid>
-
-          <Grid item xs={12}>
-            <Paper elevation={3} sx={{ p: 2, textAlign: "center" }}>
-              <Typography variant="h6">Request Leave</Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ mt: 2 }}
-                onClick={() => setOpen(true)}
-              >
-                Apply for Leave
-              </Button>
-            </Paper>
-          </Grid>
+            )}
+          </Paper>
         </Grid>
-      </Container>
 
-      {/* Modal for Leave Form */}
+        <Grid item xs={12}>
+          <Card
+            sx={{
+              p: 3,
+              borderRadius: 3,
+              backgroundColor: "#1976d2",
+              color: "#fff",
+              textAlign: "center",
+              cursor: "pointer",
+              boxShadow: 3,
+              "&:hover": {
+                backgroundColor: "#1565c0",
+              },
+            }}
+            onClick={() => setOpen(true)}
+          >
+            <Typography variant="h6">Request Leave</Typography>
+            <Typography variant="body1" mt={1}>
+              Click here to apply for leave
+            </Typography>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Leave Form Modal */}
       <Modal open={open} onClose={() => setOpen(false)}>
         <Paper
           sx={{
@@ -198,8 +200,10 @@ const UserDashboard = () => {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 400,
+            width: 420,
             p: 4,
+            borderRadius: 3,
+            boxShadow: 6,
             outline: "none",
           }}
         >
@@ -235,39 +239,21 @@ const UserDashboard = () => {
             value={leaveForm.reason}
             onChange={handleFormChange}
             margin="normal"
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  borderColor: "#ccc", // Normal border color
-                },
-                "&:hover fieldset": {
-                  borderColor: "#aaa", // Hover border color
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "transparent", // Remove blue border on focus
-                },
-              },
-              "& .MuiOutlinedInput-root.Mui-focused": {
-                boxShadow: "none", // Remove focus glow
-              },
-              "& .MuiInputBase-input": {
-                outline: "none", // Remove outline from input field
-              },
-            }}
           />
           <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
             <Button
               variant="contained"
+              onClick={handleLeaveSubmit}
               sx={{
-                backgroundColor: "#32CD32",
+                backgroundColor: "#2e7d32",
+                borderRadius: 2,
                 color: "#fff",
                 "&:hover": {
-                  backgroundColor: "#28a428",
+                  backgroundColor: "#1b5e20",
                 },
               }}
-              onClick={handleLeaveSubmit}
             >
-              Apply Leave
+              Aplly Leave
             </Button>
           </Box>
         </Paper>
@@ -275,7 +261,7 @@ const UserDashboard = () => {
 
       {/* Toast Container */}
       <ToastContainer position="top-right" autoClose={3000} />
-    </div>
+    </Container>
   );
 };
 

@@ -6,7 +6,7 @@ import Footer from "../Footer/Footer";
 import { Box, CssBaseline, Skeleton, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
-// Layout constants
+
 const drawerWidth = 240;
 const navbarHeight = 64;
 const footerHeight = 56;
@@ -38,7 +38,7 @@ const AdminLayout = () => {
               bgcolor: "background.paper",
               height: `calc(100vh - ${navbarHeight + footerHeight}px)`,
               overflowY: "auto",
-              overflowX: "hidden", // Prevent horizontal scroll
+              overflowX: "hidden",
               boxSizing: "border-box",
             }}
           >
