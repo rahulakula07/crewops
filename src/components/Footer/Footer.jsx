@@ -10,7 +10,7 @@ const Footer = () => {
           {/* Left Section */}
           <div className="col-md-4">
             <h2 className="footer-title">
-              <span className="footer-icon">⚙</span> HRbes
+              <span className="footer-icon">⚙</span> NexWork
             </h2>
             <p className="footer-text">Join our newsletter to stay up to date on features and releases.</p>
             <div className="input-group">
@@ -49,9 +49,9 @@ const Footer = () => {
 
         {/* Bottom Section */}
         <div className="footer-bottom">
-          <p>© HRbes. All rights reserved.</p>
+          <p>© NexWork. All rights reserved.</p>
           <div className="footer-links">
-            {["Privacy Policy", "Terms of Service", "Cookies Policy", "Crafted by Akula Rahul ↗", "Powered by HRbes ↗"].map((item, index) => (
+            {["Privacy Policy", "Terms of Service", "Cookies Policy", "Crafted by Akula Rahul ↗", "Powered by NexWork ↗"].map((item, index) => (
               <p key={index} className="footer-bottom-link">{item}</p>
             ))}
           </div>

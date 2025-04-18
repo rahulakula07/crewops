@@ -90,7 +90,7 @@ function Navbar() {
               fontSize: { xs: '1.2rem', sm: '1.5rem', md: '1.7rem' },
             }}
           >
-            HRbes
+            NexWork
           </Typography>
 
           {/* Hamburger menu for mobile and tablet */}

@@ -83,7 +83,7 @@ const Signup = () => {
           variant="h6"
           sx={{ mb: 3, color: "text.primary", fontWeight: 600 }}
         >
-          Create your MatDash Account
+          Create your NexWork Account
         </Typography>
 
         <Box component="form" onSubmit={handleSignup}>

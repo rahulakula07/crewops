@@ -106,7 +106,7 @@ const Login = () => {
         </Box>
 
         <Typography variant="subtitle1" sx={{ mb: 3, color: "text.secondary" }}>
-          Sign In on MatDash
+          Sign In on NexWork
         </Typography>
 
         <form onSubmit={handleLogin}>
@@ -164,7 +164,7 @@ const Login = () => {
         </form>
 
         <Typography variant="body2" sx={{ mt: 3 }}>
-          New to Matdash?{" "}
+          New to NexWork?{" "}
           <Link
             component={RouterLink}
             to="/signup"
