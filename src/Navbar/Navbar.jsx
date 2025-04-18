@@ -138,9 +138,9 @@ function Navbar() {
         <List>
           {!user ? (
             <>
-              <ListItem button component={Link} to="/Signup">
+              {/* <ListItem button component={Link} to="/Signup">
                 <ListItemText primary="Sign Up" />
-              </ListItem>
+              </ListItem> */}
               <ListItem button component={Link} to="/Login">
                 <ListItemText primary="Login" />
               </ListItem>
