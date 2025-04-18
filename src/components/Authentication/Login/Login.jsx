@@ -16,7 +16,6 @@ import {
   Paper,
   Stack,
 } from "@mui/material";
-// import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { toast } from "react-toastify";
 
 const Login = () => {
