@@ -29,7 +29,7 @@ const Sidebar = () => {
   const menuItems = [
     { text: "Dashboard", icon: <DashboardIcon />, path: "/user/Userdashboard" },
     { text: "My Tasks", icon: <WorkIcon />, path: "/user/Usertasks" },
-    { text: "Logout", icon: <LogoutIcon />, path: "/logout" },
+    // { text: "Logout", icon: <LogoutIcon />, path: "/logout" },
   ];
 
   const handleNavigation = (path) => {
