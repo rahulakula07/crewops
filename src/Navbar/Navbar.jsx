@@ -20,7 +20,7 @@ import {
   useTheme
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import logoImage from '../../dist/favicon.png'; 
+import logoImage from '../assets/favicon.png'; 
 
 function Navbar() {
   const navigate = useNavigate();
