@@ -4,6 +4,7 @@ import { author, db } from "../../../fbconfig";
 import { set, ref } from "firebase/database";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { toast } from "react-toastify";
+import logoImage from '../../../assets/favicon.png'
 
 import {
   Box,
@@ -79,6 +80,10 @@ const Signup = () => {
           backgroundColor: "#ffffff",
         }}
       >
+        <Box display="flex" justifyContent="center" mb={2}>
+                 
+                  <img src={logoImage} alt="Logo" width={30} height={30} />
+                </Box>
         <Typography
           variant="h6"
           sx={{ mb: 3, color: "text.primary", fontWeight: 600 }}
