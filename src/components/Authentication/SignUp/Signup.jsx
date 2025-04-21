@@ -1,10 +1,188 @@
+// import React, { useState } from "react";
+// import { createUserWithEmailAndPassword } from "firebase/auth";
+// import { author, db } from "../../../fbconfig";
+// import { set, ref } from "firebase/database";
+// import { useNavigate, Link as RouterLink } from "react-router-dom";
+// import { toast } from "react-toastify";
+// import logoImage from '../../../assets/favicon.png'
+
+// import {
+//   Box,
+//   TextField,
+//   Button,
+//   Typography,
+//   Paper,
+//   Link,
+//   MenuItem,
+//   Select,
+//   FormControl,
+//   InputLabel,
+// } from "@mui/material";
+
+// const Signup = () => {
+//   const [signup, setSignup] = useState({
+//     name: "",
+//     email: "",
+//     password: "",
+//     department: "",
+//   });
+
+//   const navigate = useNavigate();
+
+//   const handleDetails = (e) => {
+//     setSignup({ ...signup, [e.target.name]: e.target.value });
+//   };
+
+//   const handleSignup = async (e) => {
+//     e.preventDefault();
+//     const { name, email, password, department } = signup;
+  
+//     try {
+//       const signupUser = await createUserWithEmailAndPassword(
+//         author,
+//         email,
+//         password
+//       );
+  
+//       await set(ref(db, `users/employers/${name}`), {
+//         name,
+//         email,
+//         department,
+//         id: signupUser.user.uid,
+//       });
+  
+//       toast.success("Signup successful!");
+//       // Stay on the page, no redirect
+//     } catch (err) {
+//       console.error(err);
+//       toast.error("Signup failed. Please try again.");
+//     }
+//   };
+  
+//   return (
+//     <Box
+//       sx={{
+//         height: "100vh",
+//         backgroundColor: "#d7e8f7",
+//         display: "flex",
+//         justifyContent: "center",
+//         alignItems: "center",
+//       }}
+//     >
+//       <Paper
+//         elevation={3}
+//         sx={{
+//           p: 4,
+//           borderRadius: 3,
+//           width: "100%",
+//           maxWidth: 400,
+//           textAlign: "center",
+//           backgroundColor: "#ffffff",
+//         }}
+//       >
+//         <Box display="flex" justifyContent="center" mb={2}>
+                 
+//                   <img src={logoImage} alt="Logo" width={30} height={30} />
+//                 </Box>
+//         <Typography
+//           variant="h6"
+//           sx={{ mb: 3, color: "text.primary", fontWeight: 600 }}
+//         >
+//           Create  NexWork New Employee 
+//         </Typography>
+
+//         <Box component="form" onSubmit={handleSignup}>
+//           <TextField
+//             fullWidth
+//             size="small"
+//             label="Employee Name"
+//             name="name"
+//             type="text"
+//             variant="outlined"
+//             margin="normal"
+//             onChange={handleDetails}
+//             required
+//           />
+//           <TextField
+//             fullWidth
+//             size="small"
+//             label="Employee Email"
+//             name="email"
+//             type="email"
+//             variant="outlined"
+//             margin="normal"
+//             onChange={handleDetails}
+//             required
+//           />
+//           <TextField
+//             fullWidth
+//             size="small"
+//             label="Employee Password"
+//             name="password"
+//             type="password"
+//             variant="outlined"
+//             margin="normal"
+//             onChange={handleDetails}
+//             required
+//           />
+
+//           <FormControl fullWidth size="small" margin="normal" required>
+//             <InputLabel>Department</InputLabel>
+//             <Select
+//               name="department"
+//               value={signup.department}
+//               onChange={handleDetails}
+//               label="Department"
+//             >
+//               <MenuItem value="HR">HR</MenuItem>
+//               <MenuItem value="Engineering">Engineering</MenuItem>
+//               <MenuItem value="Marketing">Marketing</MenuItem>
+//               <MenuItem value="Sales">Sales</MenuItem>
+//               <MenuItem value="Finance">Finance</MenuItem>
+//             </Select>
+//           </FormControl>
+
+//           <Button
+//             type="submit"
+//             fullWidth
+//             variant="contained"
+//             sx={{
+//               mt: 3,
+//               backgroundColor: "#7C3AED",
+//               "&:hover": { backgroundColor: "#5B21B6" },
+//               borderRadius: "8px",
+//               textTransform: "none",
+//               fontWeight: 600,
+//             }}
+//           >
+//             Add Employee
+//           </Button>
+//         </Box>
+
+//         {/* <Typography variant="body2" sx={{ mt: 3 }}>
+//           Already have an account?{" "}
+//           <Link
+//             component={RouterLink}
+//             to="/Login"
+//             color="primary"
+//             underline="hover"
+//           >
+//             Add Employee
+//           </Link>
+//         </Typography> */}
+//       </Paper>
+//     </Box>
+//   );
+// };
+
+// export default Signup;
+
 import React, { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { author, db } from "../../../fbconfig";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { db } from "../../../fbconfig";
 import { set, ref } from "firebase/database";
-import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { toast } from "react-toastify";
-import logoImage from '../../../assets/favicon.png'
+import logoImage from '../../../assets/favicon.png';
 
 import {
   Box,
@@ -12,7 +190,6 @@ import {
   Button,
   Typography,
   Paper,
-  Link,
   MenuItem,
   Select,
   FormControl,
@@ -27,8 +204,6 @@ const Signup = () => {
     department: "",
   });
 
-  const navigate = useNavigate();
-
   const handleDetails = (e) => {
     setSignup({ ...signup, [e.target.name]: e.target.value });
   };
@@ -38,23 +213,33 @@ const Signup = () => {
     const { name, email, password, department } = signup;
 
     try {
-      const signupUser = await createUserWithEmailAndPassword(
-        author,
-        email,
-        password
-      );
+      // Step 1: Create a secondary auth instance
+      const secondaryApp = getAuth();
 
+      // Step 2: Create user without affecting the current session
+      const newUser = await createUserWithEmailAndPassword(secondaryApp, email, password);
+
+      // Step 3: Save user info to Realtime Database
       await set(ref(db, `users/employers/${name}`), {
         name,
         email,
         department,
-        id: signupUser.user.uid,
+        id: newUser.user.uid,
       });
 
-      toast.success("Signup successful! ");
-      setTimeout(() => navigate("/Login"), 1500);
+      // Step 4: Delete secondary session to avoid automatic sign-in
+      await newUser.user.delete();
+
+      toast.success("Employee added successfully!");
+      setSignup({
+        name: "",
+        email: "",
+        password: "",
+        department: "",
+      });
+
     } catch (err) {
-      console.error(err);
+      console.error("Signup failed:", err);
       toast.error("Signup failed. Please try again.");
     }
   };
@@ -81,14 +266,14 @@ const Signup = () => {
         }}
       >
         <Box display="flex" justifyContent="center" mb={2}>
-                 
-                  <img src={logoImage} alt="Logo" width={30} height={30} />
-                </Box>
+          <img src={logoImage} alt="Logo" width={30} height={30} />
+        </Box>
+
         <Typography
           variant="h6"
           sx={{ mb: 3, color: "text.primary", fontWeight: 600 }}
         >
-          Create  NexWork New Employee 
+          Create NexWork New Employee
         </Typography>
 
         <Box component="form" onSubmit={handleSignup}>
@@ -101,6 +286,7 @@ const Signup = () => {
             variant="outlined"
             margin="normal"
             onChange={handleDetails}
+            value={signup.name}
             required
           />
           <TextField
@@ -112,6 +298,7 @@ const Signup = () => {
             variant="outlined"
             margin="normal"
             onChange={handleDetails}
+            value={signup.email}
             required
           />
           <TextField
@@ -123,6 +310,7 @@ const Signup = () => {
             variant="outlined"
             margin="normal"
             onChange={handleDetails}
+            value={signup.password}
             required
           />
 
@@ -158,21 +346,10 @@ const Signup = () => {
             Add Employee
           </Button>
         </Box>
-
-        {/* <Typography variant="body2" sx={{ mt: 3 }}>
-          Already have an account?{" "}
-          <Link
-            component={RouterLink}
-            to="/Login"
-            color="primary"
-            underline="hover"
-          >
-            Add Employee
-          </Link>
-        </Typography> */}
       </Paper>
     </Box>
   );
 };
 
 export default Signup;
+
