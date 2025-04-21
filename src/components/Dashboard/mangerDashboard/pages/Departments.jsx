@@ -374,7 +374,7 @@ const Departments = () => {
 
   return (
     <div className="d-flex flex-column align-items-center p-4">
-      <Typography variant="h4" className="mb-3" color="white">Departments</Typography>
+      <Typography variant="h4" className="mb-3" color="balck">Departments</Typography>
 
       <Grid container spacing={2} justifyContent="center" className="mb-4">
         {departments.map((dept) => (
@@ -384,7 +384,7 @@ const Departments = () => {
               onClick={() => fetchUsersByDepartment(dept)}
               sx={{
                 color: "black",
-                backgroundColor: selectedDepartment === dept ? "#e8eaf6" : "white", // Subtle color for active state
+                backgroundColor: selectedDepartment === dept ? "#e8eaf6" : "white", 
                 "&:hover": { backgroundColor: selectedDepartment === dept ? "#c5cae9" : "#f0f0f0" },
                 border: "1px solid #ccc",
               }}
@@ -398,7 +398,6 @@ const Departments = () => {
       {selectedDepartment && (
         <TextField
           label="Search User"
-          variant="outlined"
           fullWidth
           value={searchQuery}
           onChange={handleSearch}
@@ -406,17 +405,17 @@ const Departments = () => {
             backgroundColor: "white",
             borderRadius: "5px",
             mb: 2,
-            border: "1px solid #ccc", // Set a subtle border color
+            border: "1px solid #ccc", 
             "& .MuiInputBase-input": { color: "black" },
             "& .MuiOutlinedInput-root": {
               "& fieldset": {
                 border: "1px solid #ccc", 
               },
               "&:hover fieldset": {
-                border: "1px solid #aaa", // Slightly darker border when hovered
+                border: "1px solid #aaa", 
               },
               "&.Mui-focused fieldset": {
-                border: "1px solid #888", // Slightly darker border on focus
+                border: "1px solid #888", 
               },
             },
           }}
@@ -428,7 +427,7 @@ const Departments = () => {
           <CircularProgress />
         ) : (
           <>
-            <Typography variant="h5" className="text-light" style={{ color: "black" }}>
+            <Typography variant="h5" className="text-light" color="black !important">
               {selectedDepartment} Department
             </Typography>
             {filteredUsers.length > 0 ? (
@@ -472,7 +471,7 @@ const Departments = () => {
       {/* Task Management Section */}
       {selectedUser && (
         <div className="mt-4 w-100">
-          <Typography variant="h6" className="text-dark" style={{ color: "black" }}>
+          <Typography variant="h6" className="text-dark" style={{ color: "black !important" }}>
             Tasks for {selectedUser.name}
           </Typography>
 
@@ -485,17 +484,17 @@ const Departments = () => {
               backgroundColor: "white",
               borderRadius: "5px",
               mt: 2,
-              border: "1px solid #ccc", // Subtle border
+              border: "1px solid #ccc", 
               "& .MuiInputBase-input": { color: "black" },
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
-                  border: "1px solid #ccc", // Subtle border when not focused
+                  border: "1px solid #ccc", 
                 },
                 "&:hover fieldset": {
-                  border: "1px solid #aaa", // Slightly darker border when hovered
+                  border: "1px solid #aaa", 
                 },
                 "&.Mui-focused fieldset": {
-                  border: "1px solid #888", // Slightly darker border on focus
+                  border: "1px solid #888", 
                 },
               },
             }}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Grid, Card, CardContent, Typography, Box, Skeleton, Paper } from "@mui/material";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { FaUsers, FaBuilding, FaDollarSign } from "react-icons/fa";
+import { FaUsers, FaBuilding, FaDollarSign, FaUserPlus, FaFileAlt } from "react-icons/fa";
 import { db } from "../../../fbconfig";
 import { ref, onValue } from "firebase/database";
 import { useNavigate } from "react-router-dom";
@@ -9,31 +9,65 @@ import { useNavigate } from "react-router-dom";
 const AdminDashboard = () => {
   const [userCount, setUserCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [appliedLeaves, setAppliedLeaves] = useState(0);
+  const [chartData, setChartData] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const usersRef = ref(db, "users");
+    const usersRef = ref(db, "users/employers");
     const unsubscribe = onValue(usersRef, (snapshot) => {
       if (snapshot.exists()) {
         const users = snapshot.val();
-        const count = Object.keys(users).length;
-        setUserCount(count);
+        let totalUsers = 0;
+        const departments = {}; 
+
+
+        Object.entries(users).forEach(([userId, userData]) => {
+          totalUsers += 1; // Increment user count
+          const department = userData.department || "Unassigned"; 
+          if (departments[department]) {
+            departments[department] += 1;
+          } else {
+            departments[department] = 1;
+          }
+        });
+
+        setUserCount(totalUsers);
+
+        // Create dynamic chart data based on the grouped departments
+        const dynamicChartData = Object.entries(departments).map(([department, count]) => ({
+          name: department,
+          employees: count,
+        }));
+
+        setChartData(dynamicChartData);
       } else {
         setUserCount(0);
+        setChartData([]);
       }
       setLoading(false);
     });
 
-    return () => unsubscribe();
-  }, []);
+    // Leave application data
+    const managerUid = "7inDJHenyPVtaxtJ3p37IpveinU2";
+    const leavesRef = ref(db, `managers/${managerUid}/leaveApplications`);
 
-  const chartData = [
-    { name: "HR", employees: 4 },
-    { name: "Tech", employees: 5 },
-    { name: "Sales", employees: 3 },
-    { name: "Marketing", employees: 2 },
-    { name: "Finance", employees: 4 },
-  ];
+    const unsubscribeLeaves = onValue(leavesRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const leaveApplications = snapshot.val();
+        const totalLeaves = Object.keys(leaveApplications).length;
+        setAppliedLeaves(totalLeaves);
+      } else {
+        setAppliedLeaves(0);
+      }
+    });
+
+    // Cleanup
+    return () => {
+      unsubscribe();
+      unsubscribeLeaves();
+    };
+  }, []);
 
   const handleNavigate = (path) => {
     navigate(path);
@@ -49,7 +83,7 @@ const AdminDashboard = () => {
     },
     {
       title: "Departments",
-      value: 5,
+      value: chartData.length,
       color: "#dc3545",
       icon: <FaBuilding />,
       path: "/admins/Departments",
@@ -60,6 +94,20 @@ const AdminDashboard = () => {
       color: "#ffc107",
       icon: <FaDollarSign />,
       path: null,
+    },
+    {
+      title: "Applied Leaves",
+      value: appliedLeaves,
+      color: "#198754",
+      icon: <FaFileAlt />,
+      path: "/admins/Leave",
+    },
+    {
+      title: "Add New Employee",
+      value: "+ Add",
+      color: "#0d6efd",
+      icon: <FaUserPlus />,
+      path: "/admins/Signup",
     },
   ];
 

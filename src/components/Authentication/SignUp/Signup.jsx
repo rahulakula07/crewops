@@ -83,14 +83,14 @@ const Signup = () => {
           variant="h6"
           sx={{ mb: 3, color: "text.primary", fontWeight: 600 }}
         >
-          Create your NexWork Account
+          Create  NexWork New Employee 
         </Typography>
 
         <Box component="form" onSubmit={handleSignup}>
           <TextField
             fullWidth
             size="small"
-            label="Name"
+            label="Employee Name"
             name="name"
             type="text"
             variant="outlined"
@@ -101,7 +101,7 @@ const Signup = () => {
           <TextField
             fullWidth
             size="small"
-            label="Email"
+            label="Employee Email"
             name="email"
             type="email"
             variant="outlined"
@@ -112,7 +112,7 @@ const Signup = () => {
           <TextField
             fullWidth
             size="small"
-            label="Password"
+            label="Employee Password"
             name="password"
             type="password"
             variant="outlined"
@@ -150,11 +150,11 @@ const Signup = () => {
               fontWeight: 600,
             }}
           >
-            Sign Up
+            Add Employee
           </Button>
         </Box>
 
-        <Typography variant="body2" sx={{ mt: 3 }}>
+        {/* <Typography variant="body2" sx={{ mt: 3 }}>
           Already have an account?{" "}
           <Link
             component={RouterLink}
@@ -162,9 +162,9 @@ const Signup = () => {
             color="primary"
             underline="hover"
           >
-            Sign in
+            Add Employee
           </Link>
-        </Typography>
+        </Typography> */}
       </Paper>
     </Box>
   );

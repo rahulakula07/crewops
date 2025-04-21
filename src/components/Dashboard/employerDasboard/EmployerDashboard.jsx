@@ -1,48 +1,31 @@
 import React, { useState, useEffect } from "react";
 import {
-  Box,
-  Grid,
-  Typography,
-  Card,
-  CardContent,
-  Button,
-  TextField,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Skeleton,
-} from "@mui/material";
-import {
-  AccessTime,
-  BusinessCenter,
-  AttachMoney,
-  Send,
-} from "@mui/icons-material";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  CartesianGrid,
-} from "recharts";
+  Box,Grid,Typography,Card,CardContent,Button,TextField,Dialog,DialogActions,DialogContent,DialogTitle,Skeleton,} from "@mui/material";
+import {AccessTime,BusinessCenter, AttachMoney, Send,} from "@mui/icons-material";
+import {BarChart,Bar,XAxis,YAxis,Tooltip,Legend,ResponsiveContainer,CartesianGrid,} from "recharts";
 import { getAuth } from "firebase/auth";
 import { ref, push } from "firebase/database";
 import { db } from "../../../fbconfig";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
-const InfoCard = ({ icon, label, value, color }) => (
+// InfoCard updated to support onClick
+const InfoCard = ({ icon, label, value, color, onClick }) => (
   <Card
+    onClick={onClick}
     sx={{
       backgroundColor: color,
       color: "white",
       borderRadius: 2,
       height: "100%",
       boxShadow: 3,
+      cursor: onClick ? "pointer" : "default",
+      transition: "transform 0.3s, box-shadow 0.3s",
+      "&:hover": {
+        transform: onClick ? "scale(1.02)" : "none",
+        boxShadow: onClick ? 6 : 3,
+      },
     }}
   >
     <CardContent>
@@ -62,8 +45,9 @@ const UserDashboard = () => {
   const [open, setOpen] = useState(false);
   const [leaveData, setLeaveData] = useState({ from: "", to: "", reason: "" });
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
-  const managerUid = "7inDJHenyPVtaxtJ3p37IpveinU2"; 
+  const managerUid = "7inDJHenyPVtaxtJ3p37IpveinU2"; // Static manager ID
 
   const taskData = [
     { name: "Task 1", progress: 80 },
@@ -122,69 +106,70 @@ const UserDashboard = () => {
       <Grid container spacing={3}>
         {isLoading
           ? new Array(4).fill(0).map((_, idx) => (
-              <Grid item xs={12} md={3} key={idx}>
-                <Card sx={{ p: 2 }}>
-                  <Skeleton variant="text" width={100} height={30} />
-                  <Skeleton variant="text" width={60} height={30} />
-                </Card>
-              </Grid>
-            ))
+            <Grid item xs={12} md={3} key={idx}>
+              <Card sx={{ p: 2 }}>
+                <Skeleton variant="text" width={100} height={30} />
+                <Skeleton variant="text" width={60} height={30} />
+              </Card>
+            </Grid>
+          ))
           : <>
-              <Grid item xs={12} md={3}>
-                <InfoCard
-                  icon={<AccessTime />}
-                  label="Attendance Today"
-                  value="Present"
-                  color="#4caf50"
-                />
-              </Grid>
-              <Grid item xs={12} md={3}>
-                <InfoCard
-                  icon={<BusinessCenter />}
-                  label="Pending Tasks"
-                  value="3"
-                  color="#f44336"
-                />
-              </Grid>
-              <Grid item xs={12} md={3}>
-                <InfoCard
-                  icon={<AttachMoney />}
-                  label="Leave Balance"
-                  value="10 Days"
-                  color="#ff9800"
-                />
-              </Grid>
-              <Grid item xs={12} md={3}>
-                <Card
-                  sx={{
-                    backgroundColor: "#2196f3",
-                    color: "white",
-                    borderRadius: 2,
-                    height: "100%",
-                    boxShadow: 3,
-                  }}
-                >
-                  <CardContent>
-                    <Typography variant="h6">Request Leave</Typography>
-                    <Button
-                      variant="outlined"
-                      endIcon={<Send />}
-                      sx={{
-                        mt: 1,
-                        borderColor: "white",
-                        color: "white",
-                        "&:hover": {
-                          borderColor: "#eee",
-                        },
-                      }}
-                      onClick={handleOpen}
-                    >
-                      Apply
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </>
+            <Grid item xs={12} md={3}>
+              <InfoCard
+                icon={<AccessTime />}
+                label="Attendance Today"
+                value="Present"
+                color="#4caf50"
+              />
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <InfoCard
+                icon={<BusinessCenter />}
+                label="Pending Tasks"
+                value="3"
+                color="#f44336"
+                onClick={() => navigate("/user/Usertasks")}
+              />
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <InfoCard
+                icon={<AttachMoney />}
+                label="Leave Balance"
+                value="10 Days"
+                color="#ff9800"
+              />
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <Card
+                sx={{
+                  backgroundColor: "#2196f3",
+                  color: "white",
+                  borderRadius: 2,
+                  height: "100%",
+                  boxShadow: 3,
+                }}
+              >
+                <CardContent>
+                  <Typography variant="h6">Request Leave</Typography>
+                  <Button
+                    variant="outlined"
+                    endIcon={<Send />}
+                    sx={{
+                      mt: 1,
+                      borderColor: "white",
+                      color: "white",
+                      "&:hover": {
+                        borderColor: "#eee",
+                      },
+                    }}
+                    onClick={handleOpen}
+                  >
+                    Apply
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          </>
         }
       </Grid>
 
@@ -264,13 +249,4 @@ const UserDashboard = () => {
 };
 
 export default UserDashboard;
-
-
-
-
-
-
-
-
-
 

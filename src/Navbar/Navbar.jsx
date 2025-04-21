@@ -20,7 +20,7 @@ import {
   useTheme
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import logoImage from '../assets/favicon.png'; 
+import logoImage from '../assets/favicon.png';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -29,6 +29,7 @@ function Navbar() {
 
   const [user, setUser] = useState(null);
   const [userName, setUserName] = useState('');
+  const [userRole, setUserRole] = useState(''); // New state for role (employee/manager)
   const [showLogout, setShowLogout] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -40,14 +41,16 @@ function Navbar() {
         const userRef = ref(db, `users/${uid}`);
         onValue(userRef, (snapshot) => {
           const data = snapshot.val();
-          if (data && data.name) {
+          if (data) {
             setUserName(data.name);
+            setUserRole(data.role); 
           } else {
             setUserName(currentUser.email);
           }
         });
       } else {
         setUserName('');
+        setUserRole(''); 
       }
     });
 
@@ -74,19 +77,50 @@ function Navbar() {
     setDrawerOpen(!drawerOpen);
   };
 
+  // const handleLogoClick = () => {
+  //   console.log(user)
+  //   if (user) {
+  //     // Navigate based on the user role (manager or employee)
+  //     if (userType === 'managers') {
+  //       navigate('/admins/AdminDashboard'); 
+  //     } else if (userType === 'employers') {
+  //       navigate('/user/UserDashboard'); 
+  //     } else {
+  //       console.log("enter correct")
+  //     }
+  //   } else {
+  //     console.log("enter correct")
+  //   }
+  // };
+  const handleLogoClick = () => {
+    if (user) {
+      if (user.uid === '7inDJHenyPVtaxtJ3p37IpveinU2') {
+        navigate('/admins/AdminDashboard');
+        console.log("admin dashboard");
+        
+      } else {
+        navigate('/user/UserDashboard');
+      }
+    } else {
+      console.log("No user logged in");
+    }
+  };
+  
+  
   return (
     <div className="landing-page">
       <AppBar position="static" sx={{ backgroundColor: 'black' }}>
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Box
-            component={Link}
-            to="/"
+            component="div"
             sx={{
               display: 'flex',
               alignItems: 'center',
               textDecoration: 'none',
               color: '#fff',
+              cursor: 'pointer',
             }}
+            onClick={handleLogoClick} 
           >
             <Box
               component="img"

@@ -118,11 +118,11 @@ const Leave = () => {
           </Grid>
         ) : (
           leaveApplications.map((leave) => (
-            <Grid item xs={12} sm={6} md={4} key={leave.id}>
+            <Grid item xs={12} sm={6} md={5} key={leave.id}>
               <Paper
                 elevation={4}
                 sx={{
-                  p: 3,
+                  p: 2,
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-between",
@@ -178,7 +178,10 @@ const Leave = () => {
                     {new Date(leave.to).toLocaleDateString()}
                   </Typography>
                   <Typography variant="body2">
-                    <strong>Reason:</strong> {leave.reason}
+                    <strong>Reason:</strong>{" "}
+                    {leave.reason.length > 24
+                      ? `${leave.reason.slice(0, 22)}...`
+                      : leave.reason}
                   </Typography>
                 </Box>
 
@@ -224,51 +227,55 @@ const Leave = () => {
         )}
       </Grid>
 
-      {/* Modal */}
-      {selectedLeave && (
-        <Modal open={open} onClose={handleCloseModal}>
-          <Paper
-            sx={{
-              fontFamily: "Roboto",
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              width: {
-                xs: "90%",
-                sm: 400,
-                md: 500,
-              },
-              p: 4,
-              outline: "none",
-            }}
-          >
-            <Typography variant="h6" gutterBottom>
-              Leave Application Details
-            </Typography>
-            <Typography variant="body1">
-              Name: {selectedLeave.userName}
-            </Typography>
-            <Typography variant="body1">
-              Email: {selectedLeave.userEmail}
-            </Typography>
-            <Typography variant="body1">
-              From: {new Date(selectedLeave.from).toLocaleDateString()}
-            </Typography>
-            <Typography variant="body1">
-              To: {new Date(selectedLeave.to).toLocaleDateString()}
-            </Typography>
-            <Typography variant="body1">
-              Reason: {selectedLeave.reason}
-            </Typography>
-            <Box sx={{ mt: 2, textAlign: "right" }}>
-              <Button variant="outlined" onClick={handleCloseModal}>
-                Close
-              </Button>
-            </Box>
-          </Paper>
-        </Modal>
-      )}
+      {/* Modal for Viewing Full Leave Details */}
+      <Modal open={open} onClose={handleCloseModal}>
+        <Paper
+          sx={{
+            fontFamily: "Roboto",
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: {
+              xs: "90%",
+              sm: 400,
+              md: 500,
+            },
+            p: 4,
+            outline: "none",
+            maxHeight: "80vh", // To prevent it from being too tall
+            overflow: "auto", // Enables scrolling if content overflows
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Leave Application Details
+          </Typography>
+          {selectedLeave && (
+            <>
+              <Typography variant="body1">
+                <strong>Name:</strong> {selectedLeave.userName}
+              </Typography>
+              <Typography variant="body1">
+                <strong>Email:</strong> {selectedLeave.userEmail}
+              </Typography>
+              <Typography variant="body1">
+                <strong>From:</strong> {new Date(selectedLeave.from).toLocaleDateString()}
+              </Typography>
+              <Typography variant="body1">
+                <strong>To:</strong> {new Date(selectedLeave.to).toLocaleDateString()}
+              </Typography>
+              <Typography variant="body1" sx={{ wordBreak: "break-word" }}>
+                <strong>Reason:</strong> {selectedLeave.reason}
+              </Typography>
+            </>
+          )}
+          <Box sx={{ mt: 2, textAlign: "right" }}>
+            <Button variant="outlined" onClick={handleCloseModal}>
+              Close
+            </Button>
+          </Box>
+        </Paper>
+      </Modal>
 
       <ToastContainer position="top-right" autoClose={3000} />
     </Container>

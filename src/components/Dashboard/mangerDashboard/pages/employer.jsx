@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../../../fbconfig";
-import { ref, get } from "firebase/database";
+import { ref, get, remove } from "firebase/database";
 import {
   Avatar,
   Badge,
@@ -16,15 +16,19 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Modal,
+  Button,
 } from "@mui/material";
 import { deepPurple, blue, green, pink, orange } from "@mui/material/colors";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { Icon } from "@iconify/react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Generate consistent color
 const getColor = (str) => {
   const colors = [blue[500], green[500], pink[500], orange[500], deepPurple[500]];
-  if (!str || typeof str !== 'string') return colors[0];  // Default to the first color if not a valid string
+  if (!str || typeof str !== 'string') return colors[0];
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
@@ -46,6 +50,8 @@ const Employer = () => {
   const [employers, setEmployers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [anchorEls, setAnchorEls] = useState({});
+  const [selectedEmployer, setSelectedEmployer] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchEmployers = async () => {
@@ -73,7 +79,6 @@ const Employer = () => {
 
   const tableActionData = [
     { icon: "solar:eye-bold", listtitle: "View" },
-    { icon: "solar:pen-new-square-broken", listtitle: "Edit" },
     { icon: "solar:trash-bin-minimalistic-outline", listtitle: "Delete" },
   ];
 
@@ -83,6 +88,26 @@ const Employer = () => {
 
   const handleMenuClose = (id) => {
     setAnchorEls({ ...anchorEls, [id]: null });
+  };
+
+  const handleActionClick = (action, employer) => {
+    if (action.listtitle === "View") {
+      setSelectedEmployer(employer);
+      setIsModalOpen(true);
+    } else if (action.listtitle === "Delete") {
+      if (window.confirm(`Are you sure you want to delete ${employer.name}?`)) {
+        const employerRef = ref(db, `users/employers/${employer.id}`);
+        remove(employerRef)
+          .then(() => {
+            toast.success("Employer deleted successfully");
+            setEmployers((prev) => prev.filter((e) => e.id !== employer.id));
+          })
+          .catch((err) => {
+            console.error(err);
+            toast.error("Error deleting employer");
+          });
+      }
+    }
   };
 
   return (
@@ -142,7 +167,13 @@ const Employer = () => {
                       onClose={() => handleMenuClose(employer.id)}
                     >
                       {tableActionData.map((action, idx) => (
-                        <MenuItem key={idx} onClick={() => handleMenuClose(employer.id)}>
+                        <MenuItem
+                          key={idx}
+                          onClick={() => {
+                            handleActionClick(action, employer);
+                            handleMenuClose(employer.id);
+                          }}
+                        >
                           <Icon icon={action.icon} style={{ marginRight: 8 }} />
                           {action.listtitle}
                         </MenuItem>
@@ -159,12 +190,46 @@ const Employer = () => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {/* View Modal */}
+      <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+            borderRadius: 2,
+          }}
+        >
+          {selectedEmployer && (
+            <>
+              <Typography variant="h6" gutterBottom>
+                Employer Details
+              </Typography>
+              <Typography><strong>Name:</strong> {selectedEmployer.name}</Typography>
+              <Typography><strong>Email:</strong> {selectedEmployer.email}</Typography>
+              <Box textAlign="right" mt={2}>
+                <Button onClick={() => setIsModalOpen(false)} variant="contained" color="primary">
+                  Close
+                </Button>
+              </Box>
+            </>
+          )}
+        </Box>
+      </Modal>
+
+      {/* Toast Notifications */}
+      <ToastContainer position="top-right" autoClose={3000} />
     </Box>
   );
 };
 
 export default Employer;
-
 
 
 
