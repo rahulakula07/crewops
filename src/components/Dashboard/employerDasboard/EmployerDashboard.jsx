@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from "react";
 import {
-  Box,Grid,Typography,Card,CardContent,Button,TextField,Dialog,DialogActions,DialogContent,DialogTitle,Skeleton,} from "@mui/material";
-import {AccessTime,BusinessCenter, AttachMoney, Send,} from "@mui/icons-material";
-import {BarChart,Bar,XAxis,YAxis,Tooltip,Legend,ResponsiveContainer,CartesianGrid,} from "recharts";
+  Box, Grid, Typography, Card, CardContent, Button, TextField, Dialog,
+  DialogActions, DialogContent, DialogTitle, Skeleton,
+} from "@mui/material";
+import {
+  AccessTime, BusinessCenter, AttachMoney, Send,
+} from "@mui/icons-material";
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid,
+} from "recharts";
 import { getAuth } from "firebase/auth";
 import { ref, push } from "firebase/database";
 import { db } from "../../../fbconfig";
@@ -10,7 +16,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 
-// InfoCard updated to support onClick
+// Updated InfoCard
 const InfoCard = ({ icon, label, value, color, onClick }) => (
   <Card
     onClick={onClick}
@@ -31,7 +37,7 @@ const InfoCard = ({ icon, label, value, color, onClick }) => (
     <CardContent>
       <Box display="flex" alignItems="center" gap={2}>
         {icon}
-        <Box>
+        <Box mt={0.5}>
           <Typography variant="h6">{label}</Typography>
           <Typography variant="h5">{value}</Typography>
         </Box>
@@ -77,6 +83,12 @@ const UserDashboard = () => {
       return;
     }
 
+    const { from, to, reason } = leaveData;
+    if (!from || !to || !reason.trim()) {
+      toast.error("Please fill all required fields.");
+      return;
+    }
+
     try {
       const leavePayload = {
         ...leaveData,
@@ -103,74 +115,75 @@ const UserDashboard = () => {
   return (
     <Box p={4}>
       {/* Top Info Cards */}
-      <Grid container spacing={3}>
+      <Grid container spacing={{ xs: 1.5, sm: 2, md: 3 }}>
         {isLoading
           ? new Array(4).fill(0).map((_, idx) => (
-            <Grid item xs={12} md={3} key={idx}>
-              <Card sx={{ p: 2 }}>
-                <Skeleton variant="text" width={100} height={30} />
-                <Skeleton variant="text" width={60} height={30} />
-              </Card>
-            </Grid>
-          ))
-          : <>
-            <Grid item xs={12} md={3}>
-              <InfoCard
-                icon={<AccessTime />}
-                label="Attendance Today"
-                value="Present"
-                color="#4caf50"
-              />
-            </Grid>
-            <Grid item xs={12} md={3}>
-              <InfoCard
-                icon={<BusinessCenter />}
-                label="Pending Tasks"
-                value="3"
-                color="#f44336"
-                onClick={() => navigate("/user/Usertasks")}
-              />
-            </Grid>
-            <Grid item xs={12} md={3}>
-              <InfoCard
-                icon={<AttachMoney />}
-                label="Leave Balance"
-                value="10 Days"
-                color="#ff9800"
-              />
-            </Grid>
-            <Grid item xs={12} md={3}>
-              <Card
-                sx={{
-                  backgroundColor: "#2196f3",
-                  color: "white",
-                  borderRadius: 2,
-                  height: "100%",
-                  boxShadow: 3,
-                }}
-              >
-                <CardContent>
-                  <Typography variant="h6">Request Leave</Typography>
-                  <Button
-                    variant="outlined"
-                    endIcon={<Send />}
-                    sx={{
-                      mt: 1,
-                      borderColor: "white",
-                      color: "white",
-                      "&:hover": {
-                        borderColor: "#eee",
-                      },
-                    }}
-                    onClick={handleOpen}
-                  >
-                    Apply
-                  </Button>
-                </CardContent>
-              </Card>
-            </Grid>
-          </>
-        }
+              <Grid item xs={12} sm={6} md={3} key={idx}>
+                <Card sx={{ p: 2 }}>
+                  <Skeleton variant="text" width={100} height={30} />
+                  <Skeleton variant="text" width={60} height={30} />
+                </Card>
+              </Grid>
+            ))
+          : (
+            <>
+              <Grid item xs={12} sm={6} md={3}>
+                <InfoCard
+                  icon={<AccessTime />}
+                  label="Attendance Today"
+                  value="Present"
+                  color="#4caf50"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <InfoCard
+                  icon={<BusinessCenter />}
+                  label="Pending Tasks"
+                  value="3"
+                  color="#f44336"
+                  onClick={() => navigate("/user/Usertasks")}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <InfoCard
+                  icon={<AttachMoney />}
+                  label="Leave Balance"
+                  value="10 Days"
+                  color="#ff9800"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Card
+                  sx={{
+                    backgroundColor: "#2196f3",
+                    color: "white",
+                    borderRadius: 2,
+                    height: "100%",
+                    boxShadow: 3,
+                  }}
+                >
+                  <CardContent>
+                    <Typography variant="h6">Request Leave</Typography>
+                    <Button
+                      variant="outlined"
+                      endIcon={<Send />}
+                      sx={{
+                        mt: 1,
+                        borderColor: "white",
+                        color: "white",
+                        "&:hover": {
+                          borderColor: "#eee",
+                        },
+                      }}
+                      onClick={handleOpen}
+                    >
+                      Apply
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </>
+          )}
       </Grid>
 
       {/* Task Progress Chart */}
@@ -237,7 +250,11 @@ const UserDashboard = () => {
           <Button onClick={handleClose} color="secondary">
             Cancel
           </Button>
-          <Button onClick={handleApplyLeave} variant="contained">
+          <Button
+            onClick={handleApplyLeave}
+            variant="contained"
+            disabled={!leaveData.from || !leaveData.to || !leaveData.reason.trim()}
+          >
             Apply Leave
           </Button>
         </DialogActions>
@@ -249,4 +266,3 @@ const UserDashboard = () => {
 };
 
 export default UserDashboard;
-

@@ -12,6 +12,7 @@ import { ref, get, remove } from "firebase/database";
 import { db } from "../../../../fbconfig";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "./leave.css"
 
 const Leave = () => {
   const [leaveApplications, setLeaveApplications] = useState([]);

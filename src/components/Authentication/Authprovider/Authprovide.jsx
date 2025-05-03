@@ -1,4 +1,3 @@
-// src/components/Authentication/Authprovider/Authprovide.jsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { author } from '../../../fbconfig';
