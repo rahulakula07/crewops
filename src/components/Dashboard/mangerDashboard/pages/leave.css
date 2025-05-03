@@ -1,5 +1,11 @@
 @media (min-width: 320px )and (max-width:766px) {
-  .css-1u8xl8z-MuiGrid-root {
+  .css-177xvbk {
+      height: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .css-1u8xl8z-MuiGrid-root {
       height: auto;
       display: flex;
       align-items: center;

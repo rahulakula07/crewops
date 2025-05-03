@@ -126,7 +126,7 @@ const Leave = () => {
                   p: 2,
                   display: "flex",
                   flexDirection: "column",
-                  justifyContent: "space-between",
+                  justifyContent: "center",
                   borderRadius: 3,
                   boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
                   transition: "transform 0.2s ease-in-out",
