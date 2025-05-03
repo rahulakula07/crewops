@@ -19,7 +19,7 @@ const Leave = () => {
   const [open, setOpen] = useState(false);
   const [selectedLeave, setSelectedLeave] = useState(null);
 
-  const managerUid = "7inDJHenyPVtaxtJ3p37IpveinU2"; // Replace with actual logic
+  const managerUid = "7inDJHenyPVtaxtJ3p37IpveinU2"; 
 
   useEffect(() => {
     const fetchLeaveApplications = async () => {
