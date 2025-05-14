@@ -24,6 +24,9 @@ const Signup = () => {
     password: "",
     department: "",
   });
+  const [loading, setLoading] = useState(false);
+
+
 
   const handleDetails = (e) => {
     setSignup({ ...signup, [e.target.name]: e.target.value });
@@ -31,6 +34,7 @@ const Signup = () => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    setLoading(true)
     const { name, email, password, department } = signup;
 
     try {
@@ -148,6 +152,7 @@ const Signup = () => {
             type="submit"
             fullWidth
             variant="contained"
+            disabled={loading}
             sx={{
               mt: 3,
               backgroundColor: "#7C3AED",
@@ -157,8 +162,9 @@ const Signup = () => {
               fontWeight: 600,
             }}
           >
-            Add Employee
+            {loading ? "Creating..." : "Add Employee"}
           </Button>
+
         </Box>
       </Paper>
     </Box>
